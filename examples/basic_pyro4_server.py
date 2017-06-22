@@ -10,6 +10,20 @@ class BasicServer(object):
             pass
 
 	@Pyro4.expose
+	def cube(self, x):
+		"""
+		Cube argument
+		"""
+		return x**3
+
+	@Pyro4.expose
+	def echo(self, arg):
+		"""
+		Echo back argument
+		"""
+		return arg
+
+	@Pyro4.expose
 	def square(self, x):
 		"""
 		Square argument
@@ -21,10 +35,6 @@ class BasicServer(object):
 		return x**2
 
 def parse_args(init_description):
-    """
-    Grab arguments relevant to the Pyro nameserver that have APC and Spectrometer servers
-    registered.
-    """
     parser = argparse.ArgumentParser(description=init_description)
 
     parser.add_argument("--ns_host", "-nsn", dest='ns_host', action='store',default='localhost',

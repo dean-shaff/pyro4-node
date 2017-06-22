@@ -2,3 +2,4 @@ Pyro4/
 service_example.js
 *.txt
 *.log
+main.py
