@@ -1,6 +1,6 @@
 ## Pyro4 client for node.js
 
-Connect to Pyro4 object using node.js, using the Pyro4 JSON serializer.
+Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 
 ### Usage
 
@@ -35,3 +35,7 @@ resList.getResult();
 var resLookup = ns.lookup('BasicServer', dataCallback);
 resLookup.getResult();
 ```
+
+### Acknowledgements
+
+Pyro4 is developed by Irmen de Jong. See [here](https://github.com/irmen/Pyro4/blob/master/LICENSE) for Pyro4's license. 
