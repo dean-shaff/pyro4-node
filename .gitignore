@@ -1,5 +1,6 @@
 Pyro4/
 deprecated/
+node_modules/
 *.txt
 *.log
 main.py
