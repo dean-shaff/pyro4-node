@@ -1,7 +1,8 @@
 const Promise = require("promise")
 
-const remote = require("./../lib/proxy");
+const format = require('./../lib/format');
 const logging = require('./../lib/logging');
+const remote = require("./../lib/proxy");
 
 logging.setLevel("INFO");
 
@@ -10,12 +11,6 @@ dataCallback = function(msg){
 }
 
 function main(){
-    // var p = new remote.Proxy('localhost', 9090, "Pyro.NameServer");
-    // console.log(p)
-    // var res = p.callMethod('list', null, null, dataCallback);
-    // res.getResult();
-    // var res1 = p.callMethod('lookup', ["BasicServer"], null, dataCallback);
-    // res1.getResult();
     var p = new remote.NameServerProxy('localhost', 9090) ;
     var res = p.list(dataCallback) ;
     res.getResult();
