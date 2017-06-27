@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/dean-shaff/pyro4-node#readme",
   "dependencies": {
-    "py-format": "^1.0.0"
+    "py-format": "^1.0.0",
+	"ycstruct": "^0.1.1"
   }
 }
