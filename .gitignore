@@ -1,6 +1,7 @@
 Pyro4/
 deprecated/
 node_modules/
+examples/sizeOf_test.js
 *.txt
 *.log
 main.py
