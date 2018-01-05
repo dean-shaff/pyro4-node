@@ -1,2 +1,2 @@
-const remote = require("./lib/proxy");
+const remote = require("./lib/_proxy");
 exports.nro = remote;
