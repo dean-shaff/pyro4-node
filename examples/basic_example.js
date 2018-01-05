@@ -8,18 +8,6 @@ var proxyHandler = (proxy)=>{
     proxy.square({args:[2]}, dataHandler)
 }
 
-var proxyHandler = (proxy)=>{
-    var iter = 0
-    dataHandler = (data, proxy)=>{
-        console.log(data)
-        if (iter < 100){
-            proxy.cube({args:[iter]}, dataHandler)
-        }
-        iter += 1
-    }
-    proxy.square({args:[2]},dataHandler)
-}
-
 var errorHandler = (error)=>{
     console.error(error.msg)
 }
@@ -42,5 +30,5 @@ var main_directAddress = function(){
     proxy.init(proxyHandler, errorHandler)
 }
 
-// main_locateNS()
+main_locateNS()
 main_directAddress()
