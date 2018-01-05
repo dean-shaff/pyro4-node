@@ -1,41 +1,31 @@
-## Pyro4 client for node.js
+## Pyro4 client for node.js v1.2.0
 
 Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 
 ### Usage
 
-The example below shows how to access remote methods of an object with a known
-host and port.
+Taken from examples/basic_example.js
 
 ```javascript
-const nro = require("pyro4-node")
+const remote = require("./../lib/proxy");
 
-function dataCallback(msg){
-    console.log(msg.data);
+var dataHandler = (data)=>{
+    console.log(data)
 }
 
-var p = new nro.Proxy('localhost', 50001, 'BasicServer');
-var res = p.callMethod('square', [2], dataCallback)
-res.getResult()
-var res1 = p.callMethod('cube', [100], dataCallback)
-res1.getResult()
-```
-
-The following example shows how to access a Pyro4 nameserver, and list the
-objects on the server.
-
-```javascript
-const nro = require("pyro4-node")
-function dataCallback(msg){
-    console.log(msg.data);
+var proxyHandler = (proxy)=>{
+    proxy.square({args:[2]}, dataHandler)
 }
-var ns = new nro.NameServerProxy('localhost',9090);
-var resList = ns.list(dataCallback);
-resList.getResult();
-var resLookup = ns.lookup('BasicServer', dataCallback);
-resLookup.getResult();
+
+var main = function(){
+    remote.locateNS(["localhost", 9090], (ns)=>{
+        ns.lookup("BasicServer", proxyHandler)
+    })
+}
+
+main()
 ```
 
 ### Acknowledgements
 
-Pyro4 is developed by Irmen de Jong. See [here](https://github.com/irmen/Pyro4/blob/master/LICENSE) for Pyro4's license. 
+Pyro4 is developed by Irmen de Jong. See [here](https://github.com/irmen/Pyro4/blob/master/LICENSE) for Pyro4's license.

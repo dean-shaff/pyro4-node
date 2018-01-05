@@ -1,29 +1,29 @@
 {
-  "name": "pyro4-node",
-  "version": "1.0.0",
-  "description": "Client (\"Proxy\") for Python Pyro4 servers. Interact with Pyro4 as if they were native Python objects.",
-  "main": "index.js",
-  "directories": {
-    "example": "examples"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dean-shaff/pyro4-node.git"
-  },
-  "keywords": [
-    "Pyro4"
-  ],
-  "author": "Dean Shaff",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/dean-shaff/pyro4-node/issues"
-  },
-  "homepage": "https://github.com/dean-shaff/pyro4-node#readme",
-  "dependencies": {
-    "py-format": "^1.0.0",
-	"ycstruct": "^0.1.1"
-  }
+    "name": "pyro4-node",
+    "version": "1.2.0",
+    "description": "Client (\"Proxy\") for Python Pyro4 servers. Interact with Pyro4 as if they were native Python objects.",
+    "main": "index.js",
+    "directories": {
+        "example": "examples"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dean-shaff/pyro4-node.git"
+    },
+    "keywords": [
+        "Pyro4"
+    ],
+    "author": "Dean Shaff",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/dean-shaff/pyro4-node/issues"
+    },
+    "homepage": "https://github.com/dean-shaff/pyro4-node#readme",
+    "dependencies": {
+        "winston": "^3.0.0-rc1",
+        "ycstruct": "^0.1.1"
+    }
 }

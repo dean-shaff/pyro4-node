@@ -1,4 +1,4 @@
-const remote = require("./../lib/_proxy");
+const remote = require("./../lib/proxy");
 
 var dataHandler = (data)=>{
     console.log(data)
