@@ -5,8 +5,9 @@ var proxyHandler = (proxy)=>{
         console.log(data)
     }
     var calls = []
-    for (var i=0; i<100; i++){
-        calls.push({methodName: "square", options:{args:[i]}, handler: dataHandler, errorHandler: errorHandler})
+    for (var i=0; i<10; i++){
+        calls.push(proxy.deferedCall("cube",{args:[i]},dataHandler,errorHandler))
+        // calls.push({methodName: "cube", options:{args:[i]}, handler: dataHandler, errorHandler: errorHandler})
     }
     proxy.batch(calls)
 }
