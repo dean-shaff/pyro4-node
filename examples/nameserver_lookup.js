@@ -1,7 +1,4 @@
-const Promise = require("promise")
 
-const format = require('./../lib/format');
-const logging = require('./../lib/logging');
 const remote = require("./../lib/proxy");
 
 logging.setLevel("INFO");
