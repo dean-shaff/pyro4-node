@@ -1,6 +1,12 @@
+const net = require("net")
+
 const remote = require("./../lib/proxy");
 
 var dataHandler = (data, proxy)=>{
+    proxy.square({args: [2]}, (data, proxy)=>{
+        console.log(`final call: data: ${data}`)
+        proxy.done()
+    })
     console.log(data)
 }
 
@@ -30,5 +36,13 @@ var main_directAddress = function(){
     proxy.init(proxyHandler, errorHandler)
 }
 
-main_locateNS()
-main_directAddress()
+var main = function(){
+    var client = net.createConnection({port:"50001", host:"localhost"}, ()=>{
+        client.write("Hey")
+    })
+}
+
+
+// main_locateNS()
+// main_directAddress()
+main()
