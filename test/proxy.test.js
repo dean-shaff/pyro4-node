@@ -1,15 +1,15 @@
 const assert = require("assert")
 
-const { Proxy, NameServerProxy, locateNS, config } = require("./../index.js")
+const { Proxy, NameServerProxy, locateNS, withProxy, config } = require("./../index.js")
 
 describe("Proxy", function(){
-    config.logLevel.Proxy = "debug"
+    config.logLevel.Proxy = "info"
     var connectMessageHeader = "PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
                                "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"
-    var location = {port:50001, host:"localhost", objName:"BasicServer"}
+    var uri = "PYRO:BasicServer@localhost:50001"
     var obj = null
     before(function(){
-        obj = new Proxy(location)
+        obj = new Proxy(uri)
     })
 
     describe("#init", function(){
@@ -101,8 +101,18 @@ describe("NameServerProxy", function(){
 
 describe("locateNS", function(){
     it("should be able to get the nameserver", async function(){
-        var ns = await locateNS()
-        assert.strictEqual(ns.constructor, NameServerProxy)
-        await ns.end()
+        await locateNS(async (ns)=>{
+            assert.strictEqual(ns.constructor, NameServerProxy)
+        })
+    })
+})
+
+describe("withProxy", function(){
+    var location = {port:50001, host:"localhost", objName:"BasicServer"}
+    it("should release resources when done", async function(){
+        await withProxy(location, async (proxy)=>{
+            var res = await proxy.square([2])
+            assert.strictEqual(res, 4)
+        })
     })
 })

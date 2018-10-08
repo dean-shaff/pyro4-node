@@ -1,18 +1,10 @@
+const { locateNS } = require("./../index.js")
 
-const remote = require("./../lib/proxy");
-
-logging.setLevel("INFO");
-
-dataCallback = function(msg){
-    console.log("main: Message data: {}".format(msg.data))
-}
-
-function main(){
-    var p = new remote.NameServerProxy('localhost', 9090) ;
-    var res = p.list(dataCallback) ;
-    res.getResult();
-    var res1 = p.lookup("BasicServer", dataCallback);
-    res1.getResult();
+var main = async ()=>{
+    await locateNS(async (ns)=>{
+        console.log(await ns.list())
+        console.log(await ns.lookup(["Pyro.NameServer"]))
+    })
 }
 
 main()

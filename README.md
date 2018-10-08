@@ -1,26 +1,20 @@
-## Pyro4 client for node.js v1.3.0
+## Pyro4 client for node.js v2.0.0
 
 Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 
 ### Usage
 
-Taken from examples/basic_example.js
+Taken from `./examples/basic_example.js`
 
 ```javascript
-const remote = require("./../lib/proxy");
+const { Proxy } = require("./../index.js")
 
-var dataHandler = (data)=>{
-    console.log(data)
-}
-
-var proxyHandler = (proxy)=>{
-    proxy.square({args:[2]}, dataHandler)
-}
-
-var main = function(){
-    remote.locateNS(["localhost", 9090], (ns)=>{
-        ns.lookup("BasicServer", proxyHandler)
-    })
+var main = async ()=>{
+    var p = new Proxy({objName: "BasicServer", port: 50001, host: "localhost"})
+    await p.init()
+    console.log(await p.square([2]))
+    console.log(await p.name)
+    await p.end()
 }
 
 main()
