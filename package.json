@@ -7,7 +7,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,13 @@
   "homepage": "https://github.com/dean-shaff/pyro4-node#readme",
   "dependencies": {
     "promise": "^8.0.1",
+    "promise-socket": "^3.1.1",
     "winston": "^3.0.0-rc1",
     "ycstruct": "^0.1.1"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^5.2.0",
+    "utf8": "^3.0.0"
   }
 }

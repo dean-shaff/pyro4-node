@@ -1,5 +1,4 @@
 Pyro4/
-deprecated/
 node_modules/
 sandbox/
 examples/sizeOf_test.js
