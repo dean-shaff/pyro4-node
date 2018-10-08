@@ -1,6 +1,6 @@
 const assert = require("assert")
 
-const { Proxy, config } = require("./../index.js")
+const { Proxy, NameServerProxy, locateNS, config } = require("./../index.js")
 
 describe("Proxy", function(){
     config.logLevel.Proxy = "debug"
@@ -48,6 +48,10 @@ describe("Proxy", function(){
     })
 
     describe("#_processOptions", function(){
+        it("should be able to get no args or kwargs", function(){
+            options = obj._processOptions(null)
+            assert.deepStrictEqual(options, {args: [], kwargs: {}})
+        })
         it("should be able to get args", function(){
             options = obj._processOptions(["arg"])
             assert.deepStrictEqual(options, {args: ["arg"], kwargs: {}})
@@ -70,5 +74,35 @@ describe("Proxy", function(){
                 `${connectMessageHeader}{"handshake":"hello","object":"BasicServer"}`
             )
         })
+    })
+})
+
+
+describe("NameServerProxy", function(){
+    var ns = new NameServerProxy()
+    describe("#list", function(){
+        it("should be able to list objects on nameserver", async function(){
+            await ns.init()
+            var objs = await ns.list()
+            assert.strictEqual(("BasicServer" in objs), true)
+            await ns.end()
+        })
+    })
+
+    describe("#lookup", function(){
+        it("should be able to lookup some object on the nameserver", async function(){
+            await ns.init()
+            var details = await ns.lookup(["BasicServer"])
+            assert.strictEqual(("state" in details), true)
+            await ns.end()
+        })
+    })
+})
+
+describe("locateNS", function(){
+    it("should be able to get the nameserver", async function(){
+        var ns = await locateNS()
+        assert.strictEqual(ns.constructor, NameServerProxy)
+        await ns.end()
     })
 })

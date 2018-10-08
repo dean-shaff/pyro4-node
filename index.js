@@ -3,11 +3,12 @@ config.logLevel.Message = "error"
 config.logLevel.Proxy = "error"
 config.logLevel.Daemon = "error"
 
-const { Proxy, locateNS } = require("./lib/proxy.js")
+const { Proxy, NameServerProxy, locateNS } = require("./lib/proxy.js")
 const { Daemon, expose } = require("./lib/daemon.js")
 
 exports.config = config
 exports.Proxy = Proxy
+exports.NameServerProxy = NameServerProxy
 exports.locateNS = locateNS
 exports.Daemon = Daemon
 exports.expose = expose
