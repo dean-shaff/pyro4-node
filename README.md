@@ -4,13 +4,13 @@ Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 
 ### Usage
 
-Taken from `./examples/basic_example.js`
+Taken from `./examples/basic.js`
 
 ```javascript
 const { Proxy } = require("./../index.js")
 
 var main = async ()=>{
-    var p = new Proxy({objName: "BasicServer", port: 50001, host: "localhost"})
+    var p = new Proxy("Pyro:BasicServer@localhost:50001")
     await p.init()
     console.log(await p.square([2]))
     console.log(await p.name)
@@ -18,6 +18,7 @@ var main = async ()=>{
 }
 
 main()
+
 ```
 
 ### Acknowledgements

@@ -19,3 +19,12 @@ asynchronous, by using `handler` arguments for `remoteMethod` calls.
 recreating the connection between each call.
 - Added some basic error handling. Still can't really identify when the user
 has correct host/port/objName.
+
+### v2.0.0
+
+- using Promises instead of callbacks. Making heavy use of async functions and await statements. Proxy code is much easier to read.
+- Message class uses async methods.
+- implemented URIs. Proxy instances take URIs.
+- added mocha tests
+- updated examples to reflect API changes.
+- basic_pyro4_example.py now has oneway methods and a few properties to play around with.
