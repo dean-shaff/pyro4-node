@@ -75,6 +75,14 @@ describe("Proxy", function(){
             )
         })
     })
+    describe("#with", function(){
+        it("should release resources when done", async function(){
+            await Proxy.with(uri, async (proxy)=>{
+                var res = await proxy.square([2])
+                assert.strictEqual(res, 4)
+            })
+        })
+    })
 })
 
 
@@ -103,16 +111,6 @@ describe("locateNS", function(){
     it("should be able to get the nameserver", async function(){
         await locateNS(async (ns)=>{
             assert.strictEqual(ns.constructor, NameServerProxy)
-        })
-    })
-})
-
-describe("withProxy", function(){
-    var location = {port:50001, host:"localhost", objName:"BasicServer"}
-    it("should release resources when done", async function(){
-        await withProxy(location, async (proxy)=>{
-            var res = await proxy.square([2])
-            assert.strictEqual(res, 4)
         })
     })
 })
