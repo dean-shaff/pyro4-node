@@ -8,12 +8,17 @@ Pyro4.config.SERIALIZER = 'json'
 class BasicServer(object):
 
     def __init__(self):
-        pass
+        self._name = "BasicServer"
 
     @Pyro4.expose
     @property
     def name(self):
-        return "BasicServer"
+        return self._name
+
+    @Pyro4.expose
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     @Pyro4.expose
     @Pyro4.oneway

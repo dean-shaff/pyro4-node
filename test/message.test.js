@@ -1,12 +1,11 @@
 const assert = require("assert")
 const util = require("util")
 
-const utf8 = require("utf8")
-
 const message = require("./../lib/message.js")
-
+const { config } = require("./../index.js")
 
 describe("Message", function(){
+    config.logLevel.Message = "debug"
     var msgConnect = null
     var msgConnectHeaderTrue = "PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
                                "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"

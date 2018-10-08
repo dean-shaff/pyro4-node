@@ -1,6 +1,6 @@
 {
   "name": "pyro4-node",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "Client (\"Proxy\") for Python Pyro4 servers. Interact with Pyro4 as if they were native Python objects.",
   "main": "index.js",
   "directories": {
@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "assert": "^1.4.1",
-    "mocha": "^5.2.0",
-    "utf8": "^3.0.0"
+    "mocha": "^5.2.0"
   }
 }
