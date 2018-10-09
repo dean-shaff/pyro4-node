@@ -9,7 +9,7 @@ try{
     const { PromiseSocket } = require("promise-socket")
     config.using(PromiseSocket)
 } catch (err) {
-    config.logger.error("Couldn't find promise-socket package, defaulting to bundled implementation.")
+    // logger.error("Couldn't find promise-socket package, defaulting to bundled implementation.")
     const { PromiseSocket } = require("./lib/promise-socket.js")
     config.using(PromiseSocket)
 }

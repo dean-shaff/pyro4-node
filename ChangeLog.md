@@ -38,3 +38,8 @@ the npm promise-socket does in the context of this library.
 and `set`. I think this is more straight forward than using the `Object.defineProperty`
 because it makes it more clear that we're dealing with Promises, not just accessing
 object attributes.
+
+
+### v2.2.0
+
+- Added defaultLogger function that creates a logger
