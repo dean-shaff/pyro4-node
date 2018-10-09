@@ -13,11 +13,13 @@ class BasicServer(object):
     @Pyro4.expose
     @property
     def name(self):
+        # print("name.getter")
         return self._name
 
     @Pyro4.expose
     @name.setter
     def name(self, value):
+        # print("name.setter: {}".format(value))
         self._name = value
 
     @Pyro4.expose

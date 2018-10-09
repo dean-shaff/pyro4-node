@@ -1,5 +1,6 @@
 const assert = require("assert")
 
+require("./helper.js")
 const { config } = require("./../lib/configuration.js")
 const message = require("./../lib/message.js")
 
@@ -13,5 +14,11 @@ describe("Configuration", function(){
             done()
         })
         config.logLevel.Message = newLevel
+    })
+    it("should be able to set the PromiseSocket constructor", function(){
+        var { PromiseSocket } = require("./../lib/promise-socket.js")
+        config.using(PromiseSocket)
+        var { PromiseSocket } = require("promise-socket")
+        config.using(PromiseSocket)
     })
 })

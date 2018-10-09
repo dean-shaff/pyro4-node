@@ -1,15 +1,19 @@
 const assert = require("assert")
 
-const { Proxy, NameServerProxy, locateNS, withProxy, config } = require("./../index.js")
+require("./helper.js")
+const { Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
 
 describe("Proxy", function(){
-    config.logLevel.Proxy = "info"
     var connectMessageHeader = "PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
                                "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"
     var uri = "PYRO:BasicServer@localhost:50001"
     var obj = null
     before(function(){
         obj = new Proxy(uri)
+    })
+
+    after(async function(){
+        await obj.end()
     })
 
     describe("#init", function(){
@@ -24,6 +28,8 @@ describe("Proxy", function(){
         it("should be able to call remote methods", async function(){
             await obj.init()
             var resp = await obj.square([2])
+            var resp1 = await obj.square([4])
+            var echo = await obj.echo(["some really long string here"])
             assert.strictEqual(resp, 4)
             await obj.end()
         })
@@ -32,7 +38,7 @@ describe("Proxy", function(){
     describe("remoteProperty", function(){
         it("should be able to get remote properties", async function(){
             await obj.init()
-            var name = await obj.name
+            var name = await obj.name.get()
             assert.strictEqual(
                 name === "new name" || name === "BasicServer", true)
             await obj.end()
@@ -40,8 +46,8 @@ describe("Proxy", function(){
         it("should be able to set remote properties", async function(){
             var newName = "new name"
             await obj.init()
-            await (obj.name = newName)
-            var name = await obj.name
+            await obj.name.set(newName)
+            var name = await obj.name.get()
             assert.strictEqual(name, newName)
             await obj.end()
         })

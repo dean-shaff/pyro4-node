@@ -28,3 +28,8 @@ has correct host/port/objName.
 - added mocha tests
 - updated examples to reflect API changes.
 - basic_pyro4_example.py now has oneway methods and a few properties to play around with.
+
+### v2.1.0
+
+- Implemented my own PromiseSocket class that essentially does the same thing that
+the npm promise-socket does in the context of this library.

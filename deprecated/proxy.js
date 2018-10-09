@@ -4,24 +4,45 @@ const PromiseSocket = require("promise-socket")
 const { createLogger, format, transports } = require('winston');
 const { combine, timestamp, label, printf } = format
 
-const message = require("./message")
-const util = require("./util")
-const { config } = require("./configuration")
-const { ConnectionError } = require("./errors")
+const message = require("./message.js")
+const util = require("./util.js")
+const { URI } = require("./uri.js")
+const { config } = require("./configuration.js")
+const { ConnectionError } = require("./errors.js")
+
 
 class Proxy{
-
-    constructor(location){
-        location = util.locationParser(location)
-        this.host = location.host
-        this.port = location.port
-        this.objName = location.objName
+    constructor(uri){
+        this.uri = new URI(uri)
+        this.host = this.uri.host
+        this.port = this.uri.port
+        this.objName = this.uri.object
         Proxy.logger.debug(`constructor: ${this.host}, ${this.port}, ${this.objName}`)
         this._socket = null
         this._promiseSocket = null
     }
 
-    async _remoteHandShake(){
+    /**
+     * Helper method for sending and receiving a response back
+     * @param  {String}  writeBytes bytes to be sent to Pyro4 Daemon
+     * @return {Promise} parsed data from response
+     */
+    async _writeRead(writeBytes){
+        await this._promiseSocket.write(
+            writeBytes
+        )
+        let msgs = await message.Message.recv(
+            await this._promiseSocket.read()
+        )
+        return JSON.parse(msgs[0].data)
+    }
+
+
+    /**
+     * Helper method to get the payload of a handshake message
+     * @return {Promise} handshake message bytes
+     */
+    async _remoteHandShakeMessage(){
         var remoteCallData = {
             handshake: "hello",
             object: this.objName
@@ -37,8 +58,30 @@ class Proxy{
         return remoteMsgBytes
     }
 
-    async _remoteMethodCall(methodName, options){
-        options = this._processOptions(options)
+
+    /**
+     * do handshake with remote Daemon
+     * @return {Promise} Message objects parsed from Daemon response
+     */
+    async _remoteHandShake(){
+        await this._promiseSocket.write(
+            await this._remoteHandShakeMessage()
+        )
+        let msgs = await message.Message.recv(
+            await this._promiseSocket.read()
+        )
+        return msgs
+    }
+
+    /**
+     * helper method to get payload of a Message for making a remote method call
+     * @param  {String} methodName name of remote method
+     * @param  {Object} options args and kwargs to send to remote Daemon
+     * @return {Promise} remote method call message bytes
+     */
+    async _remoteMethodCallMessage(methodName, ...options){
+        Proxy.logger.debug(`_remoteMethodCallMessage: ${JSON.stringify(options)}`)
+        options = this._processOptions(...options)
         var remoteCallData = {
             "object": this.objName,
             "params": options.args,
@@ -52,316 +95,115 @@ class Proxy{
         return remoteMsgBytes
     }
 
+
+    _remoteMethodFactory(methodName){
+        return async function(options){
+            return this._writeRead(
+                await this._remoteMethodCallMessage(
+                    methodName, options)
+            )
+        }
+    }
+
+    _remoteAttributeFactory(attrName){
+        Object.defineProperty(this, attrName, {
+            set: function(value) {
+                return this._remoteMethodCallMessage(
+                    "__setattr__", [attrName, value]
+                ).then((writeBytes)=>{
+                    return this._writeRead(writeBytes)
+                }).catch((err)=>{
+                    Proxy.logger.error(`${attrName}.set: ${err}`)
+                })
+            },
+            get: function() {
+                return this._remoteMethodCallMessage(
+                    "__getattr__", [attrName]
+                ).then((writeBytes)=>{
+                    return this._writeRead(writeBytes)
+                }).catch((err)=>{
+                    Proxy.logger.error(`${attrName}.get: ${err}`)
+                })
+            }
+        })
+    }
+
     async init(){
         this._socket = new net.Socket({readable:true, writable:true})
         this._promiseSocket = new PromiseSocket(this._socket)
         await this._promiseSocket.connect(this.port, this.host)
-        let handshakeData = await this._remoteHandShake()
-        await this._promiseSocket.write(handshakeData)
-        let handshakeResponse = await this._promiseSocket.readAll()
-        return handshakeResponse
-    }
-
-    //     var client = net.createConnection({port: this.port, host:this.host}, ()=>{
-    //         for (let remoteCall of this.remoteCallQueue) {
-    //             remoteCall.emit.then((writeData)=>{
-    //                 client.write(writeData)
-    //             })
-    //         }
-    //         // this.remoteCallQueue.forEach(async (remoteCall)=>{
-    //         //     let writeData = remoteCall.emit
-    //         //     client.write(writeData)
-    //         // })
-    //     });
-    //     client.on('data', this.onData())
-    //     client.on('end', this.onEnd())
-    //     client.on('error', this.onError())
-    //     return client
-    // }
-
-
-
-
-    _remoteHandShakeConsume(){
-        return (data)=>{
-            if (data.constructor === String && data === "unknown object"){
-                throw new ConnectionError("_remoteHandShakeConsume: Unknown object -- connection details may be incorrect");
-            }
+        let msgs = await this._remoteHandShake()
+        for (let msg of msgs){
+            let data = JSON.parse(msg.data)
+            Proxy.logger.debug(`init: ${JSON.stringify(data)}`)
             if ("handshake" in data){
-                Proxy.logger.debug(`_remoteHandShakeConsume: ${JSON.stringify(data.meta)}`)
+                // add methods
                 var methods = data.meta.methods
-                // console.log(`_remoteHandShakeConsume: Available methods: ${methods}`)
-                methods.forEach((method)=>{
-                    this[method] = function(options, handler, errorHandler){
-                        this.remoteMethod(method,options,handler,errorHandler)
-                    }.bind(this)
-                })
-            }
-        }
-    }
-
-    // async init(){
-    //     return new Promise((resolve, reject)=>{
-    //         this.remoteCallQueue.push({
-    //             emit: this._remoteHandShake(), // this is a promise
-    //             consume: this._remoteHandShakeConsume(),
-    //             error: reject
-    //         })
-    //         this._writeRemoteCallData()
-    //     })
-    // }
-
-
-    /**
-     * Make a "batch" call. This means that multiple calls get bundled up
-     * together and use the same net.clientConnection, instead of recreating
-     * the connection between each call.
-     * My very informal tests (simply timing two scripts with the bash `time`
-     * command) lead me to believe that batched commands can be twice as fast
-     * as making recursive calls to the `remoteMethod` function.
-     * @param  {Array} calls - An array of Objects with the following signature:
-     *      - methodName {String}: name of method to call
-     *      - options {Object}: options object from `remoteMethod`
-     *      - handler {Function}: Callback for when data is ready.
-     *      - errorHandler {Function, optional}: errorHandler function
-     * OR
-     *      An array of functions resulting from this.deferedCall
-     * @param {Function} initErrorHandler - The errorhandler to use for the
-     *      handshake.
-     * @return {null}
-     */
-    batch(calls, initErrorHandler){
-        if (initErrorHandler == undefined){initErrorHandler = null}
-        this.remoteCallQueue.push(
-            {emit:this._remoteHandShake(), consume:this._remoteHandShakeConsume(), error:initErrorHandler}
-        )
-        calls.forEach((callObj)=>{
-            if (callObj.constructor === Function){
-                this.remoteCallQueue.push(callObj())
-            }else{
-                this.remoteCallQueue.push(
-                    this.deferedCall(callObj.methodName, callObj.options, callObj.handler, callObj.errorHandler)()
-                )
-            }
-        })
-        this._writeRemoteCallData()
-    }
-
-    remoteMethod(methodName, options, handler, errorHandler){
-        Proxy.logger.debug(`remoteMethod: Called. arguments.length: ${arguments.length}`)
-        var methodCall = this._methodCallFactory(methodName, options)
-        // this.remoteCallQueue.push(
-        //              {emit:this._remoteHandShake(), consume:this._remoteHandShakeConsume(), error:errorHandler}
-        // )
-        if (arguments.length > 2){
-            if (errorHandler == undefined){errorHandler = null}
-            this.remoteCallQueue.push({emit:methodCall, consume:handler, error:errorHandler})
-            this._writeRemoteCallData()
-        }else{
-            return new Promise((resolve, reject)=>{
-                this.remoteCallQueue.push({emit:methodCall, consume:resolve, error:reject})
-                this._writeRemoteCallData()
-            })
-        }
-    }
-
-    // remoteMethodPromise(methodName, options){
-    //     Proxy.logger.debug(`remoteMethodPromise: Called. arguments.length: ${arguments.length}`)
-    //     var methodCall = this._methodCallFactory(methodName, options)
-    //     return new Promise((handler, errorHandler)=>{
-    //         Proxy.logger.debug("remoteMethodPromise Promise called.")
-    //         this.remoteCallQueue.push({emit:methodCall, consume:handler, error:errorHandler})
-    //         this._writeRemoteCallData()
-    //     })
-    // }
-
-    _methodCallFactory(methodName, options){
-        options = this._processOptions(options)
-        var methodCall = ()=>{
-            var remoteCallData = {
-                "object": this.objName,
-                "params": options.args,
-                "method": methodName,
-                "kwargs": options.kwargs,
-            }
-            var remoteCallDataStr = JSON.stringify(remoteCallData)
-            var remoteMsg = new message.Message(message.MSG_INVOKE, remoteCallDataStr, 0, 0)
-            return remoteMsg.toBytes()
-        }
-        return methodCall
-    }
-
-    _processOptions(options){
-        var args = []
-        var kwargs = {}
-        if (options != undefined){
-            if (options.constructor === Array){
-                if (options.length == 2){
-                    [args, kwargs] = options
-                }else if (options.length == 1){
-                    var args_or_kwargs = options[0]
-                    if (args_or_kwargs.constructor === Object){
-                        kwargs = args_or_kwargs
-                    }else if (args_or_kwargs.constructor === Array){
-                        args = args_or_kwargs
+                Proxy.logger.debug(`init: Methods: ${methods}`)
+                for (let method of methods){
+                    this[method] = this._remoteMethodFactory(method).bind(this)
+                }
+                // add attributes
+                var attrs = data.meta.attrs
+                Proxy.logger.debug(`init: Attributes: ${attrs}`)
+                for (let attr of attrs){
+                    if (!(attr in this)){
+                        this._remoteAttributeFactory(attr)
                     }
                 }
-            }else if (options.constructor === Object){
-                if ("args" in options){
-                    args = options.args
-                }
-                if ("kwargs" in options){
-                    kwargs = options.kwargs
+            }
+        }
+        return this
+    }
+
+    async end(){
+        await this._promiseSocket.end()
+    }
+
+    _processOptions(...options){
+        Proxy.logger.debug(`_processOptions: ${JSON.stringify(options)}`)
+        var args = []
+        var kwargs = {}
+        if (options.length == 2){
+            [args, kwargs] = options
+        } else if (options.length == 1){
+            var args_or_kwargs = options[0]
+            if (args_or_kwargs != undefined){
+                if (args_or_kwargs.constructor === Object){
+                    kwargs = args_or_kwargs
+                }else if (args_or_kwargs.constructor === Array){
+                    args = args_or_kwargs
                 }
             }
         }
         return {args: args, kwargs:kwargs}
     }
-
-    async _writeRemoteCallData(){
-        Proxy.logger.debug(`_writeRemoteCallData: Called.`)
-        var createClient = async ()=>{
-            var client = net.createConnection({port: this.port, host:this.host}, ()=>{
-                for (let remoteCall of this.remoteCallQueue) {
-                    remoteCall.emit.then((writeData)=>{
-                        client.write(writeData)
-                    })
-                }
-                // this.remoteCallQueue.forEach(async (remoteCall)=>{
-                //     let writeData = remoteCall.emit
-                //     client.write(writeData)
-                // })
-            });
-            client.on('data', this.onData())
-            client.on('end', this.onEnd())
-            client.on('error', this.onError())
-            return client
-        }
-        if (this.clientConnection === null){
-            Proxy.logger.debug("_writeRemoteCallData: Creating new client connection")
-            this.clientConnection = createClient()
-        }else{
-            Proxy.logger.debug("_writeRemoteCallData: Client already exists. Writing data.")
-            for (let remoteCall of this.remoteCallQueue){
-                this.clientConnection.write(
-                    await remoteCall.emit
-                )
-            }
-            // this.remoteCallQueue.forEach((remoteCall)=>{
-            //     this.clientConnection.write(await remoteCall.emit)
-            // })
-        }
-        // else{
-        //     Proxy.logger.debug("_writeRemoteCallData: Recreating client connection")
-        //     this.clientConnection.removeAllListeners("end")
-        //     this.clientConnection.on("end", ()=>{
-        //         this.clientConnection.destroy()
-        //         this.clientConnection = createClient()
-        //     })
-        // }
-
-    }
-
-    // _remoteHandShake(){
-    //     return ()=>{
-    //         var remoteCallData = {
-    //             handshake: "hello",
-    //             object: this.objName
-    //         }
-    //         var remoteCallDataStr = JSON.stringify(remoteCallData)
-    //         var remoteMsg = new message.Message(
-    //             message.MSG_CONNECT,
-    //             remoteCallDataStr,
-    //             message.FLAGS_META_ON_CONNECT,
-    //             0
-    //         )
-    //         return remoteMsg.toBytes()
-    //     }
-    // }
-
-    // _remoteHandShakeConsume(handler){
-    //     return (data, proxy)=>{
-    //         if (data.constructor === String && data === "unknown object"){
-    //             throw new ConnectionError("_remoteHandShakeConsume: Unknown object -- connection details may be incorrect");
-    //         }
-    //         if ("handshake" in data){
-    //             Proxy.logger.debug(`_remoteHandShakeConsume: ${JSON.stringify(data.meta)}`)
-    //             var methods = data.meta.methods
-    //             // console.log(`_remoteHandShakeConsume: Available methods: ${methods}`)
-    //             methods.forEach((method)=>{
-    //                 this[method] = function(options, handler, errorHandler){
-    //                     this.remoteMethod(method,options,handler,errorHandler)
-    //                 }.bind(this)
-    //             })
-    //         }
-    //         if (handler != undefined){
-    //             handler(this)
-    //         }
-    //     }
-    // }
-
-    onData(){
-        return async (data)=>{
-            Proxy.logger.debug(`onData: Called.`)
-            Proxy.logger.debug(`onData: data.length, data.constructor: ${data.length}, ${data.constructor.name}`)
-            var msgs = await message.Message.recv(data)
-            Proxy.logger.debug(`onData: Got ${msgs.length} messages`)
-            for (let msg of msgs){
-                var {consume, emit, reject} = this.remoteCallQueue.shift()
-                consume.then(
-                    JSON.parse(msg.data)
-                )
-            }
-            msgs.forEach((msg, idx)=>{
-                var remotePromises = this.remoteCallQueue.shift()
-                var consumePromise = remotePromises.consume
-                var onError = remotePromises.error
-                if (onError == null){
-                    consumeCallback(JSON.parse(msg.data), this)
-                }else{
-                    try{
-                        consumeCallback(JSON.parse(msg.data), this)
-                    }catch (err){
-                        onError(err)
-                    }
-                }
-            })
-        }
-    }
-    onEnd(){
-        return ()=>{
-            Proxy.logger.debug("onEnd: Called.")
-            this.clientConnection.destroy()
-        }
-    }
-    onError(){
-        return (error)=>{Proxy.logger.error(`onError: ${error}`)}
-    }
-    onDrain(){
-        return ()=>{Proxy.logger.debug("onDrain: Called.")}
-    }
-
-    done(){
-        if (this.clientConnection != undefined){
-            this.clientConnection.end()
-        }
-    }
-
-    /**
-     * [deferedCall description]
-     * @param  {[type]} methodName   [description]
-     * @param  {[type]} options      [description]
-     * @param  {[type]} handler      [description]
-     * @param  {[type]} errorHandler [description]
-     * @return {[type]}              [description]
-     */
-    deferedCall(methodName, options, handler, errorHandler){
-        if (errorHandler == undefined){errorHandler = null}
-        var methodCall = this._methodCallFactory(methodName, options)
-        return ()=>{return {emit: methodCall, consume: handler, error:errorHandler}}
-    }
-
 }
+
+
+/**
+ * A "context manager" for accessing a Proxy.
+ * This chains together the "init" and "end" async functions, placing
+ * the handler async function in between
+ * @param  {Object} location location object
+ * @param  {Async Function} handler  async Function that gets awaited
+ * between calls to init and end
+ * @return {Promise}          [description]
+ */
+Proxy.with = async function(location, handler){
+    var proxy = new Proxy(location)
+    var promise = proxy.init()
+    promise.then(()=>{
+        return proxy
+    }).then(async (proxy)=>{
+        await handler(proxy)
+        return proxy
+    }).then((proxy)=>{
+        proxy.end()
+    })
+    return promise
+}
+
 
 Proxy.logger = createLogger({
     level: config.logLevel.Proxy,
@@ -373,47 +215,58 @@ Proxy.logger = createLogger({
         util.formatter
     )
 })
+config.on("logLevel.Proxy", (level)=>{
+    Proxy.logger.level = level
+})
 
 
 class NameServerProxy extends Proxy{
     constructor(location){
-        if (location.constructor === Array){
-            var [host, port] = location
-            location = {port: port, host: host}
+        if (location === undefined){
+            var host = config.host
+            var port = config.port
+        } else {
+            if (location.constructor === Array){
+                var [host, port] = location
+            }else if (location.constructor === Object){
+                var { host, port } = location
+            }
         }
-        location.objName = config.NAMESERVER_NAME
+        var objName = config.NAMESERVER_NAME
+        var location = {port: port, host: host, objName: objName}
         super(location)
     }
-
-    /**
-     * Look up some object sitting on the nameserver
-     * @param  {String} objectName - the name of the object sitting on the nameserver
-     * @param  {Function} handler - a callback that takes a proxy argument
-     * @return {null}
-     */
-    lookup(objectName, handler){
-        var _handler = (data)=>{
-            var [PYRO, objName, Idontknow, host, port] = data.state
-            var location = {
-                objName: objName,
-                port: port,
-                host: host
-            }
-            var proxy = new Proxy(location)
-            proxy.init(handler)
-        }
-        this.remoteMethod("lookup", {args:[objectName]}, _handler)
-    }
-
-    list(handler){
-        this.remoteMethod("list", {}, handler)
-    }
 }
 
-const locateNS = function(location, handler){
+/**
+ * A "context manager" for accessing the nameserver.
+ * This chains together the "init" and "end" promises, inserting
+ * handler (an async Function) in between
+ * @param  {Array} args [location, handler]
+ * @return {Promise}
+ */
+const locateNS = async function(...args){
+    var location
+    var handler
+    if (args.length === 1){
+        [handler] = args
+    }else{
+        [location, handler] = args
+    }
     var ns = new NameServerProxy(location)
-    handler(ns)
+    var promise = ns.init()
+    promise.then(()=>{
+        return ns
+    }).then(async (ns)=>{
+        await handler(ns)
+        return ns
+    }).then((ns)=>{
+        ns.end()
+    })
+    return promise
 }
+
 
 exports.Proxy = Proxy
+exports.NameServerProxy = NameServerProxy
 exports.locateNS = locateNS
