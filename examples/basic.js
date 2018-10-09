@@ -4,7 +4,7 @@ var main = async ()=>{
     var p = new Proxy("Pyro:BasicServer@localhost:50001")
     await p.init()
     console.log(await p.square([2]))
-    console.log(await p.name)
+    console.log(await p.name.get())
     await p.end()
 }
 

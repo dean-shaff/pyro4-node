@@ -33,3 +33,8 @@ has correct host/port/objName.
 
 - Implemented my own PromiseSocket class that essentially does the same thing that
 the npm promise-socket does in the context of this library.
+    - npm promise-socket package is not a required dependency.
+- I changed the way getters and setters work. One has to manually call `get`
+and `set`. I think this is more straight forward than using the `Object.defineProperty`
+because it makes it more clear that we're dealing with Promises, not just accessing
+object attributes.
