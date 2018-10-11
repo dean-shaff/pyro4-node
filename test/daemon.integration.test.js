@@ -1,0 +1,29 @@
+const assert = require("assert")
+
+require("./helper.js")
+const { wait } = require("./../lib/util.js")
+const { Daemon } = require("./../lib/daemon.js")
+const { BasicServer } = require("./basic-server.js")
+const { Proxy } = require("./../lib/proxy.js")
+
+
+describe("Daemon Integration", function(){
+    var server ;
+    var daemon ;
+    var uri ;
+
+    before(function(){
+        server = new BasicServer()
+        daemon = new Daemon({host: "localhost", port: 50002})
+        uri = daemon.register(server)
+    })
+
+    it("should be able to connect to Daemon", async function(){
+        await daemon.init()
+        await Proxy.with(uri, async (proxy)=>{
+            var resp = await proxy.square([2])
+        })
+        await daemon.close()
+    })
+
+})
