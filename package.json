@@ -7,7 +7,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha",
+    "test": "./node_modules/.bin/mocha test/**/*.spec.js",
     "eslint": "./node_modules/.bin/eslint"
   },
   "repository": {

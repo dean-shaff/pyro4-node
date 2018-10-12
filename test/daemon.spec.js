@@ -48,4 +48,19 @@ describe("Daemon", function(){
             daemon._handShake("Pyro.Daemon")
         })
     })
+    describe("#ping", function(){
+        it("should return null", function(){
+            assert.strictEqual(daemon.ping(), null)
+        })
+    })
+    describe("#info", function(){
+        it("should return a string", function(){
+            assert.strictEqual(daemon.info().constructor, String)
+        })
+    })
+    describe("#registered", function(){
+        it("should return an array of object ids", function(){
+            assert.strictEqual(daemon.registered().constructor, Array)
+        })
+    })
 })
