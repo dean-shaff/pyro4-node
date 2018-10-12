@@ -1,4 +1,4 @@
-## Pyro4 client for node.js v2.1.0
+## Pyro4 client for node.js v2.2.0
 
 Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 

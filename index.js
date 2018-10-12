@@ -23,4 +23,4 @@ exports.NameServerProxy = NameServerProxy
 exports.locateNS = locateNS
 exports.Daemon = Daemon
 exports.expose = expose
-exports.VERSION = "2.1.0"
+exports.VERSION = "2.2.0"

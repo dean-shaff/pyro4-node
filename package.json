@@ -1,6 +1,6 @@
 {
   "name": "pyro4-node",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Client (\"Proxy\") for Python Pyro4 servers. Interact with Pyro4 as if they were native Python objects.",
   "main": "index.js",
   "directories": {

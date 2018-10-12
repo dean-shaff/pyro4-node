@@ -42,4 +42,9 @@ object attributes.
 
 ### v2.2.0
 
+- Added Daemons, which means that we can spin up JavaScript objects, and access
+them remotely from Python and JavaScript!
 - Added defaultLogger function that creates a logger
+- Added tests for daemons, and utility functions.
+- Rearranged some of the example and test code. For example, I move the basic
+Python server to the test directory.
