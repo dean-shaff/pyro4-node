@@ -19,6 +19,6 @@ class BasicServer{
 }
 
 expose(BasicServer.prototype.square)
-// expose(Daemon.prototype.name)
+expose(BasicServer, "name")
 
 exports.BasicServer = BasicServer
