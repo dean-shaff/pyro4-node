@@ -15,13 +15,15 @@ describe("Daemon Integration", function(){
     before(function(){
         server = new BasicServer()
         daemon = new Daemon({host: "localhost", port: 50002})
-        uri = daemon.register(server)
+        uri = daemon.register(server, {objectId: "BasicServer"})
+        console.log(uri.str)
     })
 
     it("should be able to connect to Daemon", async function(){
         await daemon.init()
         await Proxy.with(uri, async (proxy)=>{
             var resp = await proxy.square([2])
+            Daemon.logger.info(`got ${resp} back from server`)
         })
         await daemon.close()
     })
