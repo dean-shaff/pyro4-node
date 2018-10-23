@@ -48,3 +48,5 @@ them remotely from Python and JavaScript!
 - Added tests for daemons, and utility functions.
 - Rearranged some of the example and test code. For example, I move the basic
 Python server to the test directory.
+- changed some of the configuration names to match up better with Python Pyro.
+- Added nameserver (naming.js) and associated tests (naming.spec.js)

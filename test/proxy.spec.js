@@ -1,6 +1,6 @@
 const assert = require("assert")
 
-require("./helper.js")
+const { spawnPythonBasicServer } = require("./helper.js")
 const { Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
 
 describe("Proxy", function(){
@@ -8,8 +8,13 @@ describe("Proxy", function(){
                                "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"
     var uri = "PYRO:BasicServer@localhost:50001"
     var obj = null
-    before(function(){
-        obj = new Proxy(uri)
+    before(async function(){
+        await spawnPythonBasicServer().then((data)=>{
+            console.log(data)
+            obj = new Proxy(uri)
+        }).catch((err)=>{
+            console.log(err)
+        })
     })
 
     after(async function(){
