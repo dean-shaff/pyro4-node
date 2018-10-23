@@ -71,6 +71,20 @@ describe("Daemon", function(){
             assert.strictEqual(daemon.registered().constructor, Array)
         })
     })
+    describe("#uriFor", function(){
+        var compareUri
+        before(function(){
+            compareUri = daemon.register(server, {objectId: "BasicServer"})
+        })
+        it("should be able to a URI for a registered object, by name", function(){
+            var uri = daemon.uriFor("BasicServer")
+            assert.strictEqual(compareUri.str, uri.str)
+        })
+        it("should be able to a URI for a registered object, by object", function(){
+            var uri = daemon.uriFor(server)
+            assert.strictEqual(compareUri.str, uri.str)
+        })
+    })
 })
 
 describe("expose", function(){

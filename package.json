@@ -11,6 +11,9 @@
     "test": "./node_modules/.bin/mocha",
     "eslint": "./node_modules/.bin/eslint"
   },
+  "bin": {
+    "ns": "lib/naming.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dean-shaff/pyro4-node.git"
