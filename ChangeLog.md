@@ -50,3 +50,4 @@ them remotely from Python and JavaScript!
 Python server to the test directory.
 - changed some of the configuration names to match up better with Python Pyro.
 - Added nameserver (naming.js) and associated tests (naming.spec.js)
+- implemented uriFor method
