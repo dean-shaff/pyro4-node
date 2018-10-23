@@ -1,6 +1,7 @@
 import argparse
 import threading
 import socket
+import sys
 
 import Pyro4
 import Pyro4.naming
@@ -66,7 +67,7 @@ def parse_args(init_description):
 
     parser.add_argument(
         "--ns_port", "-nsp", dest='ns_port',
-        action='store', default=9091, type=int,
+        action='store', default=9090, type=int,
         help="Specify a port number for the Pyro name server. Default is 9090.")
 
     return parser.parse_args()
@@ -93,4 +94,5 @@ if __name__ == '__main__':
         with Pyro4.locateNS(port=parsed.ns_port, host=parsed.ns_host) as ns:
             ns.register('BasicServer', server_uri)
         print("Firing up daemon")
+        sys.stdout.flush()
         daemon.requestLoop()

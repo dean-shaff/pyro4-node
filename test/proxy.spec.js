@@ -3,18 +3,29 @@ const assert = require("assert")
 const { spawnPythonBasicServer } = require("./helper.js")
 const { Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
 
+var pythonProcess = null
+
+before(async function(){
+    var [data, process] = await spawnPythonBasicServer()
+    pythonProcess = process
+})
+
+after(async function(){
+    await new Promise((resolve, reject)=>{
+        pythonProcess.once("exit", resolve)
+        pythonProcess.kill()
+    }).then((code, signal)=>{
+        console.log(`process exited with code ${code}, signal ${signal}`)
+    })
+})
+
 describe("Proxy", function(){
     var connectMessageHeader = "PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
                                "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"
     var uri = "PYRO:BasicServer@localhost:50001"
     var obj = null
     before(async function(){
-        await spawnPythonBasicServer().then((data)=>{
-            console.log(data)
-            obj = new Proxy(uri)
-        }).catch((err)=>{
-            console.log(err)
-        })
+        obj = new Proxy(uri)
     })
 
     after(async function(){

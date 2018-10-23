@@ -62,7 +62,7 @@ describe("NameServer", function(){
 
 describe("NameServerDaemon", function(){
     it("should be able to start and stop name server daemon", async function(){
-        var nsDaemon = new NameServerDaemon()
+        var nsDaemon = new NameServerDaemon("localhost", 9091)
         await nsDaemon.init()
         await wait(100).then(nsDaemon.close())
     })
@@ -70,7 +70,7 @@ describe("NameServerDaemon", function(){
 
 describe("startNs", function(){
     it("should be able to call startNs function", async function(){
-        await startNs().then(async (ns)=>{
+        await startNs("localhost", 9091).then(async (ns)=>{
             assert.strictEqual(ns.constructor, NameServerDaemon)
             await wait(100).then(ns.close())
          })
