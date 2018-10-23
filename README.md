@@ -4,6 +4,8 @@ Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 
 ### Usage
 
+#### Client-side
+
 ```javascript
 const { Proxy } = require("./../index.js")
 
@@ -35,6 +37,10 @@ var main = async ()=>{
 
 main()
 ```
+
+#### Server-side
+
+
 
 ### Acknowledgements
 
