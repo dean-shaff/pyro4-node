@@ -1,5 +1,7 @@
 ## Pyro4 client for node.js v2.2.1
 
+[![Build Status](https://travis-ci.org/dean-shaff/pyro4-node.svg?branch=master)](https://travis-ci.org/dean-shaff/pyro4-node)
+
 Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 
 ### Usage
