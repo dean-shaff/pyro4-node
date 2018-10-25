@@ -16,8 +16,13 @@ class BasicServer{
     square(x){
         return x**2
     }
+
+    echo(val){
+        return val
+    }
 }
 
+expose(BasicServer.prototype.echo)
 expose(BasicServer.prototype.square)
 expose(BasicServer, "name")
 
@@ -27,7 +32,7 @@ var main = async ()=>{
     var uri = daemon.register(server, {objectId:"BasicServer"})
     // with name server running:
     await locateNS(async (ns)=>{
-        var resp = await ns.register("BasicServer", uri.str)
+        var resp = await ns.register(["BasicServer", uri.str])
         console.log(resp)
     })
     console.log(`Server's URI is ${uri.str}`)

@@ -7,8 +7,12 @@ const { config } = require("./../index.js")
 
 describe("Message", function(){
     var msgConnect = null
-    var msgConnectHeaderTrue = "PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
-                               "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"
+    var msgConnectHeaderTrue = Buffer.from("PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
+                               "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X")
+    var msgConnectBytesTrue = Buffer.concat(
+        [msgConnectHeaderTrue,
+         Buffer.from('{"handshake":"hello","object":"BasicServer"}')]
+    )
     var msgMethod = null
     var msgProperty = null
     var objName = "BasicServer"
@@ -29,17 +33,14 @@ describe("Message", function(){
         it("should correctly dump connect Message to bytes", async function(){
             var msgConnectBytes = await msgConnect.toBytes()
             assert.strictEqual(
-                msgConnectBytes,
-                `${msgConnectHeaderTrue}{"handshake":"hello","object":"BasicServer"}`)
+                msgConnectBytes.equals(msgConnectBytesTrue), true)
         })
     })
     describe("headerBytes", function(){
         it("should correctly dump connect Message header bytes", async function(){
             var msgConnectHeaderBytes = await msgConnect.headerBytes()
             assert.strictEqual(
-                msgConnectHeaderBytes,
-                msgConnectHeaderTrue
-            )
+                msgConnectHeaderBytes.equals(msgConnectHeaderTrue), true)
         })
     })
     describe("recv", function(){

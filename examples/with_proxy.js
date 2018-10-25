@@ -1,7 +1,7 @@
 const { Proxy } = require("./../index.js")
 
 var main = async ()=>{
-    var uri = "Pyro:BasicServer@localhost:50001"
+    var uri = "Pyro:BasicServer@localhost:50002"
     await Proxy.with(uri, async (proxy)=>{
         console.log(await proxy.square([2]))
         console.log(await proxy.name.get())

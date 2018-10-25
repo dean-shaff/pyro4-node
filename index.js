@@ -1,9 +1,10 @@
 const { config } = require("./lib/configuration.js")
-config.logLevel.Message = "error"
-config.logLevel.Proxy = "error"
-config.logLevel.Daemon = "error"
-config.logLevel.URI = "error"
-config.logLevel.Configuration = "error"
+config.logLevel.Message = "debug"
+config.logLevel.Proxy = "debug"
+config.logLevel.Daemon = "debug"
+config.logLevel.URI = "debug"
+config.logLevel.Configuration = "debug"
+config.logLevel.NameServer = "debug"
 
 try{
     const { PromiseSocket } = require("promise-socket")
