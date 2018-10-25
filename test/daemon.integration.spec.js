@@ -3,7 +3,7 @@ const assert = require("assert")
 require("./helper.js")
 const { wait } = require("./../lib/util.js")
 const { Daemon } = require("./../lib/daemon.js")
-const { BasicServer } = require("./basic-server.js")
+const { TestServer } = require("./test-server.js")
 const { Proxy } = require("./../lib/proxy.js")
 
 
@@ -13,9 +13,9 @@ describe("Daemon Integration", function(){
     var uri ;
 
     before(function(){
-        server = new BasicServer()
+        server = new TestServer()
         daemon = new Daemon({host: "localhost", port: 50002})
-        uri = daemon.register(server, {objectId: "BasicServer"})
+        uri = daemon.register(server, {objectId: "TestServer"})
         console.log(uri.str)
     })
 

@@ -5,7 +5,7 @@ const { wait } = require("./../lib/util.js")
 const { Daemon } = require("./../lib/daemon.js")
 const { NameServer, NameServerDaemon, startNs } = require("./../lib/naming.js")
 
-const { BasicServer } = require("./basic-server.js")
+const { TestServer } = require("./test-server.js")
 
 
 describe("NameServer", function(){
@@ -15,13 +15,13 @@ describe("NameServer", function(){
     })
 
     describe("register", function(){
-        var basicServerObj = new BasicServer()
-        var basicServerDaemon = new Daemon("localhost", 50001)
-        var basicServerURI = basicServerDaemon.register(basicServerObj)
-        var basicServerName = "BasicServer"
+        var testServerObj = new TestServer()
+        var testServerDaemon = new Daemon("localhost", 50001)
+        var testServerURI = testServerDaemon.register(testServerObj)
+        var testServerName = "TestServer"
 
         before(function(){
-            ns.register(basicServerName, basicServerURI)
+            ns.register(testServerName, testServerURI)
         })
         describe("count", function(){
             it("should be able to count number of objects on server", function(){
@@ -31,8 +31,8 @@ describe("NameServer", function(){
         })
         describe("lookup", function(){
             it("should be able to lookup an object on the nameserver", function(){
-                var uri = ns.lookup(basicServerName)
-                assert.strictEqual(uri, basicServerURI)
+                var uri = ns.lookup(testServerName)
+                assert.strictEqual(uri, testServerURI)
             })
         })
         describe("set_metadata", function(){
@@ -40,7 +40,7 @@ describe("NameServer", function(){
         })
         describe("remove", function(){
             it("should be able to remove a registered object from the nameserver", function(){
-                ns.remove(basicServerName)
+                ns.remove(testServerName)
             })
             it("should be able to recognize when attempting to remove an object that isn't registered", function(){
                 ns.remove("SomethingElse")

@@ -9,10 +9,10 @@ import Pyro4.naming
 Pyro4.config.SERIALIZER = 'json'
 
 
-class BasicServer(object):
+class TestServer(object):
 
     def __init__(self):
-        self._name = "BasicServer"
+        self._name = "TestServer"
 
     @Pyro4.expose
     @property
@@ -82,7 +82,7 @@ def startNSloop(*args):
 
 if __name__ == '__main__':
     parsed = parse_args("Start a basic server")
-    bs = BasicServer()
+    bs = TestServer()
 
     ns_thread = threading.Thread(
         target=startNSloop, args=(parsed.ns_host, parsed.ns_port))
@@ -90,9 +90,9 @@ if __name__ == '__main__':
     ns_thread.start()
 
     with Pyro4.Daemon(host='localhost', port=50001) as daemon:
-        server_uri = daemon.register(bs, objectId='BasicServer')
+        server_uri = daemon.register(bs, objectId='TestServer')
         with Pyro4.locateNS(port=parsed.ns_port, host=parsed.ns_host) as ns:
-            ns.register('BasicServer', server_uri)
+            ns.register('TestServer', server_uri)
         print("Firing up daemon")
         sys.stdout.flush()
         daemon.requestLoop()

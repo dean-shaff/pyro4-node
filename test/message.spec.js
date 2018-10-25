@@ -7,15 +7,18 @@ const { config } = require("./../index.js")
 
 describe("Message", function(){
     var msgConnect = null
-    var msgConnectHeaderTrue = Buffer.from("PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
-                               "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X")
+    var msgConnectHeaderTrue = Buffer.from(
+        'PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000\u0000\u0000\u0000+'+
+        '\u0000\u0002\u0000\u0000\u0000\u00005W'
+    )
+    // var msgConnectHeaderTrue = Buffer.from('PYRO0+5W')
     var msgConnectBytesTrue = Buffer.concat(
         [msgConnectHeaderTrue,
-         Buffer.from('{"handshake":"hello","object":"BasicServer"}')]
+         Buffer.from('{"handshake":"hello","object":"TestServer"}')]
     )
     var msgMethod = null
     var msgProperty = null
-    var objName = "BasicServer"
+    var objName = "TestServer"
     before(function(){
         var remoteCallData = {
             handshake: "hello",
@@ -39,6 +42,7 @@ describe("Message", function(){
     describe("headerBytes", function(){
         it("should correctly dump connect Message header bytes", async function(){
             var msgConnectHeaderBytes = await msgConnect.headerBytes()
+            console.log(msgConnectHeaderBytes.toString())
             assert.strictEqual(
                 msgConnectHeaderBytes.equals(msgConnectHeaderTrue), true)
         })

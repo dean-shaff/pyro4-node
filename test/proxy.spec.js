@@ -1,12 +1,12 @@
 const assert = require("assert")
 
-const { spawnPythonBasicServer } = require("./helper.js")
+const { spawnPythonTestServer } = require("./helper.js")
 const { Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
 
 var pythonProcess = null
 
 before(async function(){
-    var [data, process] = await spawnPythonBasicServer()
+    var [data, process] = await spawnPythonTestServer()
     pythonProcess = process
 })
 
@@ -20,9 +20,11 @@ after(async function(){
 })
 
 describe("Proxy", function(){
-    var connectMessageHeader = "PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000" +
-                               "\u0000\u0000\u0000,\u0000\u0002\u0000\u0000\u0000\u00005X"
-    var uri = "PYRO:BasicServer@localhost:50001"
+    var connectMessageHeader = Buffer.from(
+        'PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000\u0000\u0000\u0000+'+
+        '\u0000\u0002\u0000\u0000\u0000\u00005W'
+    )
+    var uri = "PYRO:TestServer@localhost:50001"
     var obj = null
     before(async function(){
         obj = new Proxy(uri)
@@ -56,7 +58,7 @@ describe("Proxy", function(){
             await obj.init()
             var name = await obj.name.get()
             assert.strictEqual(
-                name === "new name" || name === "BasicServer", true)
+                name === "new name" || name === "TestServer", true)
             await obj.end()
         })
         it("should be able to set remote properties", async function(){
@@ -90,10 +92,13 @@ describe("Proxy", function(){
 
     describe("#_remoteHandShakeMessage", function(){
         it("should be able to generate handshake message bytes", async function(){
-            var bytes = await obj._remoteHandShakeMessage()
-            assert.equal(
-                bytes,
-                `${connectMessageHeader}{"handshake":"hello","object":"BasicServer"}`
+            var bytes = Buffer.from(await obj._remoteHandShakeMessage())
+            var connectMessageBytesTrue = Buffer.concat([
+                connectMessageHeader,
+                Buffer.from('{"handshake":"hello","object":"TestServer"}')
+            ])
+            assert.strictEqual(
+                bytes.equals(connectMessageBytesTrue), true
             )
         })
     })
@@ -114,7 +119,7 @@ describe("NameServerProxy", function(){
         it("should be able to list objects on nameserver", async function(){
             await ns.init()
             var objs = await ns.list()
-            assert.strictEqual(("BasicServer" in objs), true)
+            assert.strictEqual(("TestServer" in objs), true)
             await ns.end()
         })
     })
@@ -122,7 +127,7 @@ describe("NameServerProxy", function(){
     describe("#lookup", function(){
         it("should be able to lookup some object on the nameserver", async function(){
             await ns.init()
-            var details = await ns.lookup(["BasicServer"])
+            var details = await ns.lookup(["TestServer"])
             assert.strictEqual(("state" in details), true)
             await ns.end()
         })

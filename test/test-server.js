@@ -1,8 +1,8 @@
 const { expose } = require("./../lib/daemon.js")
 
-class BasicServer{
+class TestServer{
     constructor(){
-        this._name = "BasicServer"
+        this._name = "TestServer"
     }
 
     get name(){
@@ -16,9 +16,12 @@ class BasicServer{
     square(x){
         return x**2
     }
+
+    ping(){}
 }
 
-expose(BasicServer.prototype.square)
-expose(BasicServer, "name")
+expose(TestServer.prototype.square)
+expose(TestServer.prototype.ping)
+expose(TestServer, "name")
 
-exports.BasicServer = BasicServer
+exports.TestServer = TestServer

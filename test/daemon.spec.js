@@ -3,21 +3,21 @@ const assert = require("assert")
 require("./helper.js")
 const { wait } = require("./../lib/util.js")
 const { Daemon, expose } = require("./../lib/daemon.js")
-const { BasicServer } = require("./basic-server.js")
+const { TestServer } = require("./test-server.js")
 
 
 describe("Daemon", function(){
     var server = null
     var daemon = null
     before(function(){
-        server = new BasicServer()
+        server = new TestServer()
         daemon = new Daemon({host: "localhost", port: 50002})
     })
     describe("#register", function(){
         it("should be able to register objects with Daemon", function(){
-            var uri = daemon.register(server, {objectId: "BasicServer"})
+            var uri = daemon.register(server, {objectId: "TestServer"})
             assert.strictEqual(uri.location, "localhost:50002")
-            assert.strictEqual(uri.str, "PYRO:BasicServer@localhost:50002")
+            assert.strictEqual(uri.str, "PYRO:TestServer@localhost:50002")
         })
     })
     describe("#init", function(){
@@ -28,21 +28,21 @@ describe("Daemon", function(){
     })
     describe("#_invoke", function(){
         before(function(){
-            daemon.register(server, {objectId: "BasicServer"})
+            daemon.register(server, {objectId: "TestServer"})
         })
         it("should be able to invoke a method on a registered object", function(){
-            daemon._invoke("BasicServer", "square", [2], {}, 0)
+            daemon._invoke("TestServer", "square", [2], {}, 0)
         })
         it("should be able to get attribute of registered object", function(){
-            daemon._invoke("BasicServer", "__getattr__", ["name"], {}, 0)
+            daemon._invoke("TestServer", "__getattr__", ["name"], {}, 0)
         })
         it("should be able to set attribute of registered object", function(){
-            daemon._invoke("BasicServer", "__setattr__", ["name", "new name"], {}, 0)
+            daemon._invoke("TestServer", "__setattr__", ["name", "new name"], {}, 0)
             assert.strictEqual(server.name, "new name")
         })
         it("should raise DaemonError when method isn't present", function(){
             assert.throws(
-                ()=>{daemon._invoke("BasicServer", "eww", [], {}, 0)}
+                ()=>{daemon._invoke("TestServer", "eww", [], {}, 0)}
             )
         })
         it("should raise DaemonError when object isn't present", function(){
@@ -74,10 +74,10 @@ describe("Daemon", function(){
     describe("#uriFor", function(){
         var compareUri
         before(function(){
-            compareUri = daemon.register(server, {objectId: "BasicServer"})
+            compareUri = daemon.register(server, {objectId: "TestServer"})
         })
         it("should be able to a URI for a registered object, by name", function(){
-            var uri = daemon.uriFor("BasicServer")
+            var uri = daemon.uriFor("TestServer")
             assert.strictEqual(compareUri.str, uri.str)
         })
         it("should be able to a URI for a registered object, by object", function(){

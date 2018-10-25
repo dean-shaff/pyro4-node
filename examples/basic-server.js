@@ -20,6 +20,8 @@ class BasicServer{
     echo(val){
         return val
     }
+
+    ping(){}
 }
 
 expose(BasicServer.prototype.echo)

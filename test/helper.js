@@ -10,9 +10,9 @@ config.logLevel.Message = "debug"
 config.logLevel.Daemon = "debug"
 config.using(PromiseSocket)
 
-const spawnPythonBasicServer = async ()=>{
-    var pathToBasicServer = path.join(__dirname, "basic_server.py")
-    var pythonProcess = spawn("python3", [pathToBasicServer])
+const spawnPythonTestServer = async ()=>{
+    var pathToTestServer = path.join(__dirname, "test_server.py")
+    var pythonProcess = spawn("python3", [pathToTestServer])
     return new Promise((resolve, reject)=>{
         pythonProcess.stdout.once("data", resolve)
         pythonProcess.stderr.once("data", reject)
@@ -24,4 +24,4 @@ const spawnPythonBasicServer = async ()=>{
     })
 }
 
-exports.spawnPythonBasicServer = spawnPythonBasicServer
+exports.spawnPythonTestServer = spawnPythonTestServer
