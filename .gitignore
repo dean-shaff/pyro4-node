@@ -5,3 +5,4 @@ examples/sizeOf_test.js
 *.txt
 *.log
 main.py
+.editorconfig

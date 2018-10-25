@@ -22,4 +22,6 @@ describe("URI", function(){
             assert.strictEqual(uri.location, "localhost:50001")
         })
     })
+    describe("#toObj", function(){})
+    describe("#fromObj", function(){})
 })
