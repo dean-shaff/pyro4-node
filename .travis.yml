@@ -2,3 +2,8 @@ language: node_js
 node_js:
     - "10"
     - "8"
+python:
+    - "3.6"
+before_install:
+    - pip3 install --user pyro4
+    - python3 -c "import Pyro4"
