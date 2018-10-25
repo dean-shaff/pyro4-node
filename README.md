@@ -7,6 +7,8 @@ Connect to Pyro4 objects using node.js, using the Pyro4 JSON serializer.
 #### Client-side
 
 ```javascript
+// basic-proxy.js
+
 const { Proxy } = require("./../index.js")
 
 var main = async ()=>{
