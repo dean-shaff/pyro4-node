@@ -1,7 +1,7 @@
 {
   "name": "pyro4-node",
   "version": "2.2.0",
-  "description": "Client (\"Proxy\") for Python Pyro4 servers. Interact with Pyro4 as if they were native Python objects.",
+  "description": "Client (\"Proxy\") and server (\"Daemon\") for interacting with Pyro4 objects.",
   "main": "index.js",
   "directories": {
     "example": "examples"
@@ -12,7 +12,7 @@
     "eslint": "./node_modules/.bin/eslint"
   },
   "bin": {
-    "ns": "lib/naming.js"
+    "pyro4-node-ns": "lib/naming.js"
   },
   "repository": {
     "type": "git",

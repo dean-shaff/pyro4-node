@@ -50,4 +50,6 @@ them remotely from Python and JavaScript!
 Python server to the test directory.
 - changed some of the configuration names to match up better with Python Pyro.
 - Added nameserver (naming.js) and associated tests (naming.spec.js)
-- implemented uriFor method
+- implemented uriFor method in Daemon class
+- Fixed bug in Message protocol. I learned an important lesson: Never convert `Buffer`s to strings and then send across a TCP
+connection. *Always* send the raw `Buffer` object, and then unpack it on the receiving side.
