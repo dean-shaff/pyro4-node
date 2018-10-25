@@ -18,6 +18,7 @@ try{
 const { Proxy, NameServerProxy, locateNS } = require("./lib/proxy.js")
 const { Daemon, expose } = require("./lib/daemon.js")
 const { NameServerDaemon, startNs } = require("./lib/naming.js")
+const { URI } = require("./lib/uri.js")
 
 exports.config = config
 exports.Proxy = Proxy
@@ -27,4 +28,5 @@ exports.Daemon = Daemon
 exports.expose = expose
 exports.NameServerDaemon = NameServerDaemon
 exports.startNs = startNs
-exports.VERSION = "2.2.0"
+exports.URI = URI
+exports.VERSION = "2.2.1"

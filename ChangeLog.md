@@ -53,3 +53,13 @@ Python server to the test directory.
 - implemented uriFor method in Daemon class
 - Fixed bug in Message protocol. I learned an important lesson: Never convert `Buffer`s to strings and then send across a TCP
 connection. *Always* send the raw `Buffer` object, and then unpack it on the receiving side.
+
+### v2.2.1
+
+- Figured out why remote method calls took about twice as long as equivalent
+Python calls. Remote method calls have less overhead (~0.3ms less) than before.
+It turns out that making calls to winston loggers is relatively expensive,
+especially if you're `stringify`-ing objects and such.
+- `Message`, `Daemon` and `Proxy` had many methods that didn't need to be
+async methods that were. I changed unnecessary `async` methods into normal
+methods

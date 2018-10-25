@@ -16,7 +16,6 @@ describe("Daemon Integration", function(){
         server = new TestServer()
         daemon = new Daemon({host: "localhost", port: 50002})
         uri = daemon.register(server, {objectId: "TestServer"})
-        console.log(uri.str)
     })
 
     it("should be able to connect to Daemon", async function(){
