@@ -29,4 +29,4 @@ exports.expose = expose
 exports.NameServerDaemon = NameServerDaemon
 exports.startNs = startNs
 exports.URI = URI
-exports.VERSION = "2.3.1"
+exports.VERSION = "2.4.0"

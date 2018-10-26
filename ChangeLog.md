@@ -74,3 +74,7 @@ doing each call individually.
 ### v2.3.1
 
 - Added another example.
+
+### v2.4.0
+
+- Added support for calling Python oneway methods.

@@ -48,9 +48,9 @@ describe("Proxy", function(){
             var resp = await obj.square([2])
             var resp1 = await obj.square([4])
             var echo = await obj.echo(["some really long string here"])
-            // var oneWayResp = await obj.oneway_method([2])
+            var oneWayResp = await obj.oneway_method([2])
             assert.strictEqual(resp, 4)
-            // assert.strictEqual(oneWayResp, null)
+            assert.strictEqual(oneWayResp, null)
             await obj.end()
         })
     })
@@ -94,7 +94,7 @@ describe("Proxy", function(){
 
     describe("#_remoteHandShakeMessage", function(){
         it("should be able to generate handshake message bytes", async function(){
-            var bytes = Buffer.from(await obj._remoteHandShakeMessage())
+            var bytes = Buffer.from(await obj._remoteHandShakeMessage().toBytes())
             var connectMessageBytesTrue = Buffer.concat([
                 connectMessageHeader,
                 Buffer.from('{"handshake":"hello","object":"TestServer"}')
