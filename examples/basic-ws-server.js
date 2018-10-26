@@ -1,6 +1,8 @@
-const { locateNS, WebSocketDaemon } = require("./../index.js")
+const { config, locateNS, WebSocketDaemon } = require("./../index.js")
 
 const { BasicServer } = require("./basic-server.js")
+
+config.logLevel.Daemon = "debug"
 
 var main = async ()=>{
     var server = new BasicServer()
@@ -11,7 +13,8 @@ var main = async ()=>{
     //     var resp = await ns.register(["BasicServer", uri.str])
     //     console.log(resp)
     // })
-    console.log(`Server's URI is ${uri.str}`)
+    console.log("serving up")
+    // console.log(`Server's URI is ${uri.str}`)
     await daemon.init()
 }
 
