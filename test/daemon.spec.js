@@ -2,7 +2,7 @@ const assert = require("assert")
 
 require("./helper.js")
 const { wait } = require("./../lib/util.js")
-const { Daemon, expose } = require("./../lib/daemon.js")
+const { SocketDaemon, WebSocketDaemon, Daemon, expose } = require("./../lib/daemon.js")
 const { TestServer } = require("./test-server.js")
 
 
@@ -19,6 +19,45 @@ describe("Daemon", function(){
             assert.strictEqual(uri.location, "localhost:50002")
             assert.strictEqual(uri.str, "PYRO:TestServer@localhost:50002")
         })
+    })
+
+    describe("#ping", function(){
+        it("should return null", function(){
+            assert.strictEqual(daemon.ping(), null)
+        })
+    })
+    describe("#info", function(){
+        it("should return a string", function(){
+            assert.strictEqual(daemon.info().constructor, String)
+        })
+    })
+    describe("#registered", function(){
+        it("should return an array of object ids", function(){
+            assert.strictEqual(daemon.registered().constructor, Array)
+        })
+    })
+    describe("#uriFor", function(){
+        var compareUri
+        before(function(){
+            compareUri = daemon.register(server, {objectId: "TestServer"})
+        })
+        it("should be able to a URI for a registered object, by name", function(){
+            var uri = daemon.uriFor("TestServer")
+            assert.strictEqual(compareUri.str, uri.str)
+        })
+        it("should be able to a URI for a registered object, by object", function(){
+            var uri = daemon.uriFor(server)
+            assert.strictEqual(compareUri.str, uri.str)
+        })
+    })
+})
+
+describe("SocketDaemon", function(){
+    var server = null
+    var daemon = null
+    before(function(){
+        server = new TestServer()
+        daemon = new SocketDaemon({host: "localhost", port: 50002})
     })
     describe("#init", function(){
         it("should be able to listen for incoming connections", async function(){
@@ -56,36 +95,23 @@ describe("Daemon", function(){
             daemon._handShake("Pyro.Daemon")
         })
     })
-    describe("#ping", function(){
-        it("should return null", function(){
-            assert.strictEqual(daemon.ping(), null)
-        })
+})
+
+describe("WebSocketDaemon", function(){
+    var server = null
+    var daemon = null
+    before(function(){
+        server = new TestServer()
+        daemon = new WebSocketDaemon({host: "localhost", port: 50002})
     })
-    describe("#info", function(){
-        it("should return a string", function(){
-            assert.strictEqual(daemon.info().constructor, String)
-        })
-    })
-    describe("#registered", function(){
-        it("should return an array of object ids", function(){
-            assert.strictEqual(daemon.registered().constructor, Array)
-        })
-    })
-    describe("#uriFor", function(){
-        var compareUri
-        before(function(){
-            compareUri = daemon.register(server, {objectId: "TestServer"})
-        })
-        it("should be able to a URI for a registered object, by name", function(){
-            var uri = daemon.uriFor("TestServer")
-            assert.strictEqual(compareUri.str, uri.str)
-        })
-        it("should be able to a URI for a registered object, by object", function(){
-            var uri = daemon.uriFor(server)
-            assert.strictEqual(compareUri.str, uri.str)
+    describe("#init", function(){
+        it("should be able to listen for incoming connections", async function(){
+            await daemon.init()
+            await wait(100).then(daemon.close())
         })
     })
 })
+
 
 describe("expose", function(){
     class DummyClass {
