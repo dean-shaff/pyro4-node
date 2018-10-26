@@ -10,7 +10,8 @@
     "test": "./node_modules/.bin/mocha test/**/*.spec.js",
     "test-single": "./node_modules/.bin/mocha",
     "eslint": "./node_modules/.bin/eslint",
-    "build-dev": "./node_modules/.bin/webpack --config webpack.config.dev.js"
+    "build-web": "./node_modules/.bin/webpack --config webpack.config.web.js",
+    "build-node": "./node_modules/.bin/webpack --config webpack.config.node.js"
   },
   "bin": {
     "pyro4-node-ns": "lib/naming.js"

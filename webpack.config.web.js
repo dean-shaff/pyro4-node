@@ -3,12 +3,12 @@ const path = require("path")
 
 module.exports = {
     target: "web",
-    mode: 'development',
+    mode: 'production',
     entry: [
-        "./index.front.js"
+        "./index.web.js"
     ],
     output: {
-        filename: "index.js",
+        filename: "index.web.js",
         path: path.resolve(__dirname, "dist")
     },
     module: {

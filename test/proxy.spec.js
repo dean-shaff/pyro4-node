@@ -1,7 +1,9 @@
 const assert = require("assert")
 
 const { spawnPythonTestServer } = require("./helper.js")
-const { SocketProxy, WebSocketProxy, Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
+const { Proxy } = require("./../lib/proxy.js")
+const { SocketProxy } = require("./../lib/socket-proxy.js")
+const { WebSocketProxy } = require("./../lib/web-socket-proxy.js")
 
 var pythonProcess = null
 
@@ -62,6 +64,12 @@ describe("Proxy", function(){
             )
         })
     })
+    describe("#Proxy.with", function(){
+        it("should be able to release resources when done", async function(){
+            Proxy.with({}, async () => {})
+        })
+    })
+
 })
 
 describe("SocketProxy", function(){
@@ -116,9 +124,9 @@ describe("SocketProxy", function(){
     })
 
 
-    describe("#with", function(){
+    describe("#SocketProxy.with", function(){
         it("should release resources when done", async function(){
-            await Proxy.with(uri, async (proxy)=>{
+            await SocketProxy.with(uri, async (proxy)=>{
                 var res = await proxy.square([2])
                 assert.strictEqual(res, 4)
             })
@@ -139,31 +147,11 @@ describe("WebSocketProxy", function(){
     })
 })
 
-describe("NameServerProxy", function(){
-    var ns = new NameServerProxy()
-    describe("#list", function(){
-        it("should be able to list objects on nameserver", async function(){
-            await ns.init()
-            var objs = await ns.list()
-            assert.strictEqual(("TestServer" in objs), true)
-            await ns.end()
-        })
-    })
-
-    describe("#lookup", function(){
-        it("should be able to lookup some object on the nameserver", async function(){
-            await ns.init()
-            var details = await ns.lookup(["TestServer"])
-            assert.strictEqual(("state" in details), true)
-            await ns.end()
-        })
-    })
-})
 
 describe("locateNS", function(){
     it("should be able to get the nameserver", async function(){
-        await locateNS(async (ns)=>{
-            assert.strictEqual(ns.constructor, NameServerProxy)
+        await SocketProxy.locateNS(async (ns)=>{
+            assert.strictEqual(ns.constructor, SocketProxy)
         })
     })
 })
