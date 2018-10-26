@@ -2,14 +2,15 @@
   "name": "pyro4-node",
   "version": "2.4.0",
   "description": "Client (\"Proxy\") and server (\"Daemon\") for interacting with Pyro4 objects.",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "directories": {
     "example": "examples"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha test/**/*.spec.js",
     "test-single": "./node_modules/.bin/mocha",
-    "eslint": "./node_modules/.bin/eslint"
+    "eslint": "./node_modules/.bin/eslint",
+    "build-dev": "./node_modules/.bin/webpack --config webpack.config.dev.js"
   },
   "bin": {
     "pyro4-node-ns": "lib/naming.js"
@@ -28,6 +29,7 @@
   },
   "homepage": "https://github.com/dean-shaff/pyro4-node#readme",
   "dependencies": {
+    "buffer": "^5.2.1",
     "promise": "^8.0.1",
     "promise-socket": "^3.1.1",
     "socket.io": "^2.1.1",
@@ -44,6 +46,8 @@
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2"
   }
 }

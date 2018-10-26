@@ -1,8 +1,6 @@
-const { config, locateNS, WebSocketDaemon } = require("./../index.js")
+const { WebSocketDaemon } = require("./../lib/daemon.js")
 
 const { BasicServer } = require("./basic-server.js")
-
-config.logLevel.Daemon = "debug"
 
 var main = async ()=>{
     var server = new BasicServer()

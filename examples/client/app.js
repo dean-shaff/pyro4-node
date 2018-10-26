@@ -1,6 +1,3 @@
-const io = require("socket.io-client")
-
-const { WebSocketProxy } = require("./../lib/web-socket-proxy.js")
 
 var main = async () => {
     var uri = "PYRO:BasicServer@localhost:50002"

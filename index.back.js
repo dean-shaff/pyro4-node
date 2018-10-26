@@ -1,10 +1,10 @@
 const { config } = require("./lib/configuration.js")
-config.logLevel.Message = "error"
-config.logLevel.Proxy = "error"
-config.logLevel.Daemon = "error"
-config.logLevel.URI = "error"
-config.logLevel.Configuration = "error"
-config.logLevel.NameServer = "error"
+// config.logLevel.Message = "error"
+// config.logLevel.Proxy = "error"
+// config.logLevel.Daemon = "error"
+// config.logLevel.URI = "error"
+// config.logLevel.Configuration = "error"
+// config.logLevel.NameServer = "error"
 
 try{
     const { PromiseSocket } = require("promise-socket")
@@ -16,6 +16,8 @@ try{
 }
 
 const { Proxy, NameServerProxy, locateNS } = require("./lib/proxy.js")
+const { WebSocketProxy } = require("./lib/web-socket-proxy.js")
+const { SocketProxy } = require("./lib/socket-proxy.js")
 const { SocketDaemon, WebSocketDaemon, Daemon, expose } = require("./lib/daemon.js")
 const { NameServerDaemon, startNs } = require("./lib/naming.js")
 const { URI } = require("./lib/uri.js")

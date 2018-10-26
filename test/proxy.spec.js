@@ -1,7 +1,7 @@
 const assert = require("assert")
 
 const { spawnPythonTestServer } = require("./helper.js")
-const { Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
+const { SocketProxy, WebSocketProxy, Proxy, NameServerProxy, locateNS } = require("./../lib/proxy.js")
 
 var pythonProcess = null
 
@@ -26,8 +26,50 @@ describe("Proxy", function(){
     )
     var uri = "PYRO:TestServer@localhost:50001"
     var obj = null
+
     before(async function(){
         obj = new Proxy(uri)
+    })
+
+    describe("#_processOptions", function(){
+        it("should be able to get no args or kwargs", function(){
+            options = obj._processOptions(null)
+            assert.deepStrictEqual(options, {args: [], kwargs: {}})
+        })
+        it("should be able to get args", function(){
+            options = obj._processOptions(["arg"])
+            assert.deepStrictEqual(options, {args: ["arg"], kwargs: {}})
+        })
+        it("should be able to get kwargs", function(){
+            options = obj._processOptions({kwarg:"kwarg"})
+            assert.deepStrictEqual(options, {args: [], kwargs: {kwarg: "kwarg"}})
+        })
+        it("should be able to process mix of args and kwargs", function(){
+            options = obj._processOptions(["arg"], {kwarg:"kwarg"})
+            assert.deepStrictEqual(options, {args: ["arg"], kwargs: {kwarg: "kwarg"}})
+        })
+    })
+
+    describe("#_remoteHandShakeMessage", function(){
+        it("should be able to generate handshake message bytes", async function(){
+            var bytes = Buffer.from(await obj._remoteHandShakeMessage().toBytes())
+            var connectMessageBytesTrue = Buffer.concat([
+                connectMessageHeader,
+                Buffer.from('{"handshake":"hello","object":"TestServer"}')
+            ])
+            assert.strictEqual(
+                bytes.equals(connectMessageBytesTrue), true
+            )
+        })
+    })
+})
+
+describe("SocketProxy", function(){
+
+    var uri = "PYRO:TestServer@localhost:50001"
+    var obj = null
+    before(async function(){
+        obj = new SocketProxy(uri)
     })
 
     after(async function(){
@@ -73,37 +115,7 @@ describe("Proxy", function(){
         })
     })
 
-    describe("#_processOptions", function(){
-        it("should be able to get no args or kwargs", function(){
-            options = obj._processOptions(null)
-            assert.deepStrictEqual(options, {args: [], kwargs: {}})
-        })
-        it("should be able to get args", function(){
-            options = obj._processOptions(["arg"])
-            assert.deepStrictEqual(options, {args: ["arg"], kwargs: {}})
-        })
-        it("should be able to get kwargs", function(){
-            options = obj._processOptions({kwarg:"kwarg"})
-            assert.deepStrictEqual(options, {args: [], kwargs: {kwarg: "kwarg"}})
-        })
-        it("should be able to process mix of args and kwargs", function(){
-            options = obj._processOptions(["arg"], {kwarg:"kwarg"})
-            assert.deepStrictEqual(options, {args: ["arg"], kwargs: {kwarg: "kwarg"}})
-        })
-    })
 
-    describe("#_remoteHandShakeMessage", function(){
-        it("should be able to generate handshake message bytes", async function(){
-            var bytes = Buffer.from(await obj._remoteHandShakeMessage().toBytes())
-            var connectMessageBytesTrue = Buffer.concat([
-                connectMessageHeader,
-                Buffer.from('{"handshake":"hello","object":"TestServer"}')
-            ])
-            assert.strictEqual(
-                bytes.equals(connectMessageBytesTrue), true
-            )
-        })
-    })
     describe("#with", function(){
         it("should release resources when done", async function(){
             await Proxy.with(uri, async (proxy)=>{
@@ -114,6 +126,18 @@ describe("Proxy", function(){
     })
 })
 
+
+describe("WebSocketProxy", function(){
+    var uri = "WS:TestServer@localhost:50001"
+    var obj = null
+    before(async function(){
+        obj = new WebSocketProxy(uri)
+    })
+
+    after(async function(){
+        await obj.end()
+    })
+})
 
 describe("NameServerProxy", function(){
     var ns = new NameServerProxy()
