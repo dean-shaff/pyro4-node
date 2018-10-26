@@ -1,4 +1,3 @@
-
 var main = async () => {
     var uri = "PYRO:BasicServer@localhost:50002"
     var proxy = new WebSocketProxy(uri)

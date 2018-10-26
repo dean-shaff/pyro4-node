@@ -2,7 +2,7 @@ const assert = require("assert")
 
 require("./helper.js")
 const { wait } = require("./../lib/util.js")
-const { SocketDaemon } = require("./../lib/daemon.js")
+const { SocketDaemon } = require("./../lib/socket-daemon.js")
 const { TestServer } = require("./test-server.js")
 const { Proxy } = require("./../lib/proxy.js")
 

@@ -10,15 +10,12 @@ describe("Configuration", function(){
         var newLevel = "info"
         config.on("logLevel.Message", (level)=>{
             assert.strictEqual(config.logLevel.Message, newLevel)
-            assert.strictEqual(message.Message.logger.level, newLevel)
             done()
         })
         config.logLevel.Message = newLevel
     })
     it("should be able to set the PromiseSocket constructor", function(){
         var { PromiseSocket } = require("./../lib/promise-socket.js")
-        config.using(PromiseSocket)
-        var { PromiseSocket } = require("promise-socket")
         config.using(PromiseSocket)
     })
 })

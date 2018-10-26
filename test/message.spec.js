@@ -3,7 +3,7 @@ const util = require("util")
 
 require("./helper.js")
 const message = require("./../lib/message.js")
-const { config } = require("./../index.js")
+const { config } = require("./../lib/configuration.js")
 
 describe("Message", function(){
     var msgConnect = null
