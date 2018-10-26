@@ -63,3 +63,9 @@ especially if you're `stringify`-ing objects and such.
 - `Message`, `Daemon` and `Proxy` had many methods that didn't need to be
 async methods that were. I changed unnecessary `async` methods into normal
 methods
+
+### v2.3.0
+
+- Remote method calls can be "batched". As each remote method returns a promise,
+we can resolve these with `Promise.all`. This is not (surprisingly), faster than
+doing each call individually. 
