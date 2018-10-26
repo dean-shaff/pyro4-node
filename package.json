@@ -2,7 +2,7 @@
   "name": "pyro4-node",
   "version": "2.4.0",
   "description": "Client (\"Proxy\") and server (\"Daemon\") for interacting with Pyro4 objects.",
-  "main": "./lib/index.js",
+  "private": true,
   "directories": {
     "example": "examples"
   },
@@ -32,7 +32,6 @@
   "dependencies": {
     "buffer": "^5.2.1",
     "promise": "^8.0.1",
-    "promise-socket": "^3.1.1",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
     "uuid4": "^1.1.4",
