@@ -68,4 +68,9 @@ methods
 
 - Remote method calls can be "batched". As each remote method returns a promise,
 we can resolve these with `Promise.all`. This is not (surprisingly), faster than
-doing each call individually. 
+doing each call individually.
+
+
+### v2.3.1
+
+- Added another example.

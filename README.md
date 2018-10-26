@@ -1,4 +1,4 @@
-## Pyro4 client (`Proxy`) and server (`Daemon`) for node.js v2.3.0
+## Pyro4 client (`Proxy`) and server (`Daemon`) for node.js v2.3.1
 
 [![Build Status](https://travis-ci.org/dean-shaff/pyro4-node.svg?branch=master)](https://travis-ci.org/dean-shaff/pyro4-node)
 
@@ -41,6 +41,29 @@ var main = async ()=>{
 }
 
 main()
+```
+
+As of version 2.3.0, you can make batched calls. This is simply a matter of
+making a list of calls (really just `Promise`s), and then `await`ing `Promise.all`:
+
+```javascript
+// proxy-batched.js
+const { Proxy } = require("./../index.js")
+
+var main = async ()=>{
+    var uri = "Pyro:TestServer@localhost:50001"
+    await Proxy.with(uri, async (proxy)=>{
+        var calls = []
+        for (let i=1; i<=100; i++){
+            calls.push(proxy.square([i]))
+        }
+        var resp = await Promise.all(calls)
+        console.log(resp)
+    })
+}
+
+main()
+
 ```
 
 #### Server-side

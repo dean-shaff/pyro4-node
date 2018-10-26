@@ -49,7 +49,6 @@ describe("Proxy", function(){
             var resp1 = await obj.square([4])
             var echo = await obj.echo(["some really long string here"])
             // var oneWayResp = await obj.oneway_method([2])
-
             assert.strictEqual(resp, 4)
             // assert.strictEqual(oneWayResp, null)
             await obj.end()
