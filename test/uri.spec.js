@@ -8,7 +8,8 @@ describe("URI", function(){
         protocol: "PYRO",
         object: "TestServer",
         host: "localhost",
-        port: 50001
+        port: 50001,
+        sockname: null
     }
     describe("#_parseStringURI", function(){
         it("should be able to parse normal Daemon URI", function(){
