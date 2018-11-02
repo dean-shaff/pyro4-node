@@ -1,14 +1,14 @@
-const assert = require("assert")
-const util = require("util")
+const assert = require('assert')
+const util = require('util')
 
-require("./helper.js")
-const message = require("./../lib/message.js")
-const { config } = require("./../lib/configuration.js")
+require('./helper.js')
+const message = require('./../lib/message.js')
+const { config } = require('./../lib/configuration.js')
 
-describe("Message", function(){
+describe('Message', function () {
     var msgConnect = null
     var msgConnectHeaderTrue = Buffer.from(
-        'PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000\u0000\u0000\u0000+'+
+        'PYRO\u00000\u0000\u0001\u0000\u0010\u0000\u0000\u0000\u0000\u0000+' +
         '\u0000\u0002\u0000\u0000\u0000\u00005W'
     )
     // var msgConnectHeaderTrue = Buffer.from('PYRO0+5W')
@@ -18,10 +18,10 @@ describe("Message", function(){
     )
     var msgMethod = null
     var msgProperty = null
-    var objName = "TestServer"
-    before(function(){
+    var objName = 'TestServer'
+    before(function () {
         var remoteCallData = {
-            handshake: "hello",
+            handshake: 'hello',
             object: objName
         }
         msgConnect = new message.Message(
@@ -32,23 +32,23 @@ describe("Message", function(){
         )
     })
 
-    describe("toBytes", function(){
-        it("should correctly dump connect Message to bytes", async function(){
+    describe('toBytes', function () {
+        it('should correctly dump connect Message to bytes', async function () {
             var msgConnectBytes = await msgConnect.toBytes()
             assert.strictEqual(
                 msgConnectBytes.equals(msgConnectBytesTrue), true)
         })
     })
-    describe("headerBytes", function(){
-        it("should correctly dump connect Message header bytes", async function(){
+    describe('headerBytes', function () {
+        it('should correctly dump connect Message header bytes', async function () {
             var msgConnectHeaderBytes = await msgConnect.headerBytes()
             console.log(msgConnectHeaderBytes.toString())
             assert.strictEqual(
                 msgConnectHeaderBytes.equals(msgConnectHeaderTrue), true)
         })
     })
-    describe("recv", function(){
-        it("should unpack data from client", async function(){
+    describe('recv', function () {
+        it('should unpack data from client', async function () {
         })
     })
 })

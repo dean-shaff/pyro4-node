@@ -1,27 +1,33 @@
-const path = require("path")
-const { spawn } = require("child_process")
+const path = require('path')
+const { spawn } = require('child_process')
 
-const { config } = require("./../lib/configuration.js")
+const { config } = require('./../lib/configuration.js')
 
-const { PromiseSocket } = require("./../lib/promise-socket.js")
+config.logLevel.Proxy = 'debug'
+config.logLevel.Message = 'debug'
+config.logLevel.Daemon = 'debug'
 
-config.logLevel.Proxy = "debug"
-config.logLevel.Message = "debug"
-config.logLevel.Daemon = "debug"
-config.using(PromiseSocket)
-
-const spawnPythonTestServer = async ()=>{
-    var pathToTestServer = path.join(__dirname, "test_server.py")
-    var pythonProcess = spawn("python3", [pathToTestServer])
-    return new Promise((resolve, reject)=>{
-        pythonProcess.stdout.once("data", resolve)
-        pythonProcess.stderr.once("data", reject)
-    }).then((data)=>{
+const spawnPythonTestServer = async () => {
+    var pathToTestServer = path.join(__dirname, 'test_server.py')
+    var pythonProcess = spawn('python3', [pathToTestServer])
+    return new Promise((resolve, reject) => {
+        pythonProcess.stdout.once('data', resolve)
+        pythonProcess.stderr.once('data', reject)
+    }).then((data) => {
         return [data, pythonProcess]
-    }).catch((err)=>{
+    }).catch((err) => {
         console.error(`stderr: ${err}`)
-        console.error("Make sure Python3 and Pyro4 are installed")
+        console.error('Make sure Python3 and Pyro4 are installed')
+    })
+}
+
+const mochaResolvePromise = (promise, done) => {
+    promise.then(() => {
+        done()
+    }).catch((err) => {
+        done(err)
     })
 }
 
 exports.spawnPythonTestServer = spawnPythonTestServer
+exports.mochaResolvePromise = mochaResolvePromise
