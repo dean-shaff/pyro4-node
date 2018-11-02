@@ -1,4 +1,4 @@
-## Pyro4 client (`Proxy`) and server (`Daemon`) for node.js v2.4.0
+## Pyro4 client (`Proxy`) and server (`Daemon`) for node.js v3.0.0
 
 [![Build Status](https://travis-ci.org/dean-shaff/pyro4-node.svg?branch=master)](https://travis-ci.org/dean-shaff/pyro4-node)
 

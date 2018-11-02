@@ -1,6 +1,6 @@
 {
   "name": "pyro4-node",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "Client (\"Proxy\") and server (\"Daemon\") for interacting with Pyro4 objects.",
   "private": true,
   "directories": {
@@ -8,10 +8,10 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha test/**/*.spec.js",
-    "test-single": "./node_modules/.bin/mocha",
+    "test:single": "./node_modules/.bin/mocha",
     "eslint": "./node_modules/.bin/eslint",
-    "build-web": "./node_modules/.bin/webpack --config webpack.config.web.js",
-    "build-node": "./node_modules/.bin/webpack --config webpack.config.node.js"
+    "build:web": "./node_modules/.bin/webpack --config webpack.config.web.js",
+    "build:node": "./node_modules/.bin/webpack --config webpack.config.node.js"
   },
   "bin": {
     "pyro4-node-ns": "lib/naming.js"
