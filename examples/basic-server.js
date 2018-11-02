@@ -1,4 +1,4 @@
-const { expose } = require("./../lib/daemon.js")
+const { expose } = require("./../lib/daemon/daemon.js")
 
 class BasicServer{
     constructor(){

@@ -1,6 +1,10 @@
 var main = async () => {
-    var uri = "PYRO:BasicServer@localhost:50002"
-    var proxy = new WebSocketProxy(uri)
+    var uri = "PYRO_WS:BasicServer@localhost:50002"
+    try {
+        var proxy = new WebSocketProxy(uri)
+    } catch (err) {
+        console.log(err)
+    }
     await proxy.init()
     console.time("calls")
     var promises = []
