@@ -1,9 +1,11 @@
 const assert = require('assert')
 
 const { mochaResolvePromise } = require('./helper.js')
+const { TestServer } = require('./test-server.js')
+
 const { wait } = require('./../lib/util.js')
 const { SocketDaemon, WebSocketDaemon } = require('./../lib/daemon/daemon.js')
-const { TestServer } = require('./test-server.js')
+const { Proxy } = require('./../lib/proxy/proxy.js')
 
 describe('DaemonIntegration', function () {
     var daemonCls = [
@@ -11,8 +13,8 @@ describe('DaemonIntegration', function () {
         WebSocketDaemon
     ]
     var locations = [
-        { host: 'localhost', port: 50001 },
-        { host: 'localhost', port: 50002 }
+        { host: 'localhost', port: 50004 },
+        { host: 'localhost', port: 50005 }
     ]
     var servers = []
     var daemons = []
@@ -20,8 +22,9 @@ describe('DaemonIntegration', function () {
     before(function () {
         daemonCls.forEach((cls, idx) => {
             var server = new TestServer()
+            var daemon = new cls(locations[idx])
             servers.push(server)
-            daemons.push(new cls(locations[idx]))
+            daemons.push(daemon)
         })
     })
 
@@ -40,11 +43,19 @@ describe('DaemonIntegration', function () {
 
     describe('invoke', function () {
         it('a proxy should be able to connect and invoke a method', function (done) {
-            var p = daemons.map((daemon) => {
+            var p = daemons.map((daemon, idx) => {
+                var proxy
                 return daemon.init().then(() => {
-                    wait(100)
+                    var uri = daemon.register(servers[idx])
+                    proxy = new Proxy(uri)
+                    return proxy.init()
+                }).then((proxy) => {
+                    return proxy.square([2])
+                }).then((resp) => {
+                    assert.strictEqual(resp, 4)
+                    return proxy.end()
                 }).then(() => {
-                    daemon.close()
+                    return daemon.close()
                 })
             })
             mochaResolvePromise(Promise.all(p), done)

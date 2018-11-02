@@ -13,8 +13,4 @@ describe('Configuration', function () {
         })
         config.logLevel.Message = newLevel
     })
-    it('should be able to set the PromiseSocket constructor', function () {
-        var { PromiseSocket } = require('./../lib/promise-socket.js')
-        config.using(PromiseSocket)
-    })
 })

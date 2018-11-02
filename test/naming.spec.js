@@ -2,7 +2,7 @@ const assert = require('assert')
 
 require('./helper.js')
 const { wait } = require('./../lib/util.js')
-const { Daemon } = require('./../lib/daemon.js')
+const { SocketDaemon } = require('./../lib/daemon/daemon.js')
 const { NameServer, NameServerDaemon, startNs } = require('./../lib/naming.js')
 
 const { TestServer } = require('./test-server.js')
@@ -15,7 +15,7 @@ describe('NameServer', function () {
 
     describe('register', function () {
         var testServerObj = new TestServer()
-        var testServerDaemon = new Daemon('localhost', 50001)
+        var testServerDaemon = new SocketDaemon('localhost', 50001)
         var testServerURI = testServerDaemon.register(testServerObj)
         var testServerName = 'TestServer'
 
